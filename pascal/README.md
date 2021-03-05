@@ -52,11 +52,11 @@ et de générer un vrai exécutable.
 
 Un fichier `Makefile` est fournit. Quelques règles intéressantes :
 
- - 'make foo.i' génération de l'assembleur
+ - `make foo.i` génération de l'assembleur
 
- - 'make foo.o' génération de l'objet (résolution des symboles)
+ - `make foo.o` génération de l'objet (résolution des symboles)
 
- - 'make foo.x' exécution du programme
+ - `make foo.x` exécution du programme
 
 ## Développement progressif
 
