@@ -111,8 +111,7 @@ expression :
 1. autoriser les commandes vides
 
 1. penser aux erreurs de syntaxe (ne pas arrêter la calculatrice !)
-
-  *redéfinir le nombre de token absorbé si nécessaire…*
+   *redéfinir le nombre de token absorbé si nécessaire…*
 
 1. ajouter un opérateur ternaire conditionnel de type `cond ? v1 : v2`
 
