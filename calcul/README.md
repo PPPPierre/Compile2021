@@ -115,9 +115,7 @@ expression :
 
 1. ajouter un opérateur ternaire conditionnel de type `cond ? v1 : v2`
 
-1. pouvoir faire plusieurs calculs sur une seule ligne
-
-1. ignorer les commentaires (fin de ligne et zone) dont la syntaxe est à définir
+1. ignorer des commentaires (fin de ligne et zone) dont la syntaxe est à définir
 
 1. accepter les valeurs spéciales `Infinity`, `NaN`…
 
