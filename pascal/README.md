@@ -68,6 +68,10 @@ Le compilateur doit produire le texte assembleur
 du programme compilé, qui peut apparaître sur la sortie standard
 par exemple.
 
+Attention d'ajouter des nouveaux tests à chaque étape sans effacer
+les tests précédents, de manière à pouvoir les ré-exécuter si nécessaire.
+Pour cela, créer des fichiers `test_NN.p` autant quen de besoin.
+
 Choisir tout d'abord une syntaxe pour votre langage (expressions,
 variables, fonctions, arguments), par exemple en vous inspirant du
 langage *Pascal*.
