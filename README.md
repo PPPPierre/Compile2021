@@ -25,7 +25,9 @@ ls
 ```
 
 Vous devez y voir un fichier `README.md` et deux dossiers correspondant aux deux sujets
-de TP : `calcul` et `pascal`
+de TP : `calcul` et `pascal`. Pour ces TPs, vous prendrez soin de faire des `git commit`
+et `git push` réguliers pour garder trace de vos développements et sauvegarder votre
+projet.
 
 ## TP Calculatrice
 
