@@ -1,5 +1,7 @@
 # Réalisation d'un compilateur
 
+*Corinne Ancourt, Fabien Coelho, Pierre Guillou*
+
 ## Outils disponibles
 
 L'objectif de cette séance de travaux pratiques est de réaliser un
@@ -52,9 +54,9 @@ et de générer un vrai exécutable.
 
 Un fichier `Makefile` est fournit. Quelques règles intéressantes :
 
- - `make foo.i` génération de l'assembleur
+ - `make foo.i` génération de l'assembleur à partir du fichier `foo.p`
 
- - `make foo.o` génération de l'objet (résolution des symboles)
+ - `make foo.o` génération du code objet (résolution des symboles)
 
  - `make foo.x` exécution du programme
 
@@ -90,7 +92,9 @@ langage *Pascal*.
 
 1. ajouter les opérations * et / (associativité, précédence ?)
 
-1. permettre des commentaires dans le programme (ligne, zones)
+1. permettre des commentaires par lignes dans le programme
+
+1. permettre des commentaires par zones dans le programme
 
 1. déclarer/définir une variable scalaire
 

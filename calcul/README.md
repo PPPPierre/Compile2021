@@ -1,5 +1,7 @@
 # TP Calculatrice
 
+*Corinne Ancourt, Fabien Coelho, Pierre Guillou*
+
 L'objectif de cette séance de travaux pratiques est de réaliser une
 petite calculatrice en mode texte, avec *JFLEX* et *CUP*.
 
