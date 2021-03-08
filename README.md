@@ -19,7 +19,7 @@ Une fois sur cette machine vous disposez de commandes diverses :
 
 - `ls` pour regarder le contenu du répertoire courant
 - `cd dossier` pour changer de répertoire (`..` pour remonter)
-- `nano fichier` éditeur simple
+- `nano fichier` éditeur très simple en ligne de commande
 - `git …` gestionnaire de sources
 
 ## Connection au GitLab
