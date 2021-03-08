@@ -4,6 +4,24 @@ Semaine PSL - Mars 2021 - INformatique Fondamentale Et CompilaTion (INFECT)
 
 *pour l'humour de l'acronyme, voir @hermant.*
 
+## Connection SSH
+
+Vous devez pouvoir vous connecter à l'école avec votre identifiant `pnom`,
+en utilisant un client SSH, sur n'importe quel OS. Dans un terminal de
+commande, en passant par la machine intermédiaire `ssh-eleves.mines-paristech.fr` :
+
+```shell
+ssh fcoelho@ssh-eleves.mines-paristech.fr
+ssh cal119
+```
+
+Une fois sur cette machine vous disposez de commandes diverses :
+
+- `ls` pour regarder le contenu du répertoire courant
+- `cd dossier` pour changer de répertoire (`..` pour remonter)
+- `nano fichier` éditeur simple
+- `git …` gestionnaire de sources
+
 ## Connection au GitLab
 
 Finalisez votre compte sur le [GitLab du CRI](https://gitlab.cri.mines-paristech.fr/).
