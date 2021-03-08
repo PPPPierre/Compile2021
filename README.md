@@ -49,8 +49,8 @@ projet.
 
 ## TP Calculatrice
 
-Allez dans le sous-répertoire `calcul` et faire le TP décrit dans le fichier `README.md`.
+Allez dans le sous-répertoire [calcul](calcul/) et faire le TP décrit dans le fichier `README.md`.
 
 ## TP Pascal
 
-Allez dans le sous-répertoire `pascal` et faire le TP décrit dans le fichier `README.md`.
+Allez dans le sous-répertoire [pascal](pascal/) et faire le TP décrit dans le fichier `README.md`.
