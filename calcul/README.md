@@ -65,7 +65,15 @@ make run       # lancement, ctrl-D pour sortir
 make clean     # nettoyage
 ```
 
+Lancer la commande `make run` afin de vérifier que l'installation est opérationnelle.
+La calculatrice accepte de simples entiers et peut les additionner.
+En cas dysfonctionnement, éditer le fichier `Makefile` et ajuster la variable `JFLAGS`
+pour correspondre à la version disponible de `cup`.
+
 ## Suggestion de développement progressif
+
+Regarder attentivement la version initiale des fichiers [calcul.jlex](calcul.jlex)
+et [calcul.cup](calcul.cup).
 
 Quelques idées pour développer progressivement votre calculette pour une
 expression :
