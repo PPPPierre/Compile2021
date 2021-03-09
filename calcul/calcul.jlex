@@ -24,6 +24,11 @@ import java.io.*;
 "/"     { return new Symbol(sym.TK_DIVIDE); }
 "("     { return new Symbol(sym.TK_OP); }
 ")"     { return new Symbol(sym.TK_CP); }
+"sin"   { return new Symbol(sym.TK_SIN); }
+"cos"   { return new Symbol(sym.TK_COS); }
+"tan"   { return new Symbol(sym.TK_TAN); }
+"sqrt"   { return new Symbol(sym.TK_SQRT); }
+"log"   { return new Symbol(sym.TK_LOG); }
 (\n|\r|\r\n)	{ return new Symbol(sym.TK_DONE); }
 [\ \t\f] { /* ignore espaces et assimiles. */ }
 .	{ System.err.println("unexpected char '" + yytext() +
