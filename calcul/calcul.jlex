@@ -22,6 +22,8 @@ import java.io.*;
 "-"     { return new Symbol(sym.TK_MINUS); }
 "*"     { return new Symbol(sym.TK_TIMES); }
 "/"     { return new Symbol(sym.TK_DIVIDE); }
+"("     { return new Symbol(sym.TK_OP); }
+")"     { return new Symbol(sym.TK_CP); }
 (\n|\r|\r\n)	{ return new Symbol(sym.TK_DONE); }
 [\ \t\f] { /* ignore espaces et assimiles. */ }
 .	{ System.err.println("unexpected char '" + yytext() +
