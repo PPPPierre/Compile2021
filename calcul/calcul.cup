@@ -63,6 +63,18 @@ expression ::=
   |
       TK_SIN TK_OP expression:e TK_CP      // effectue la fonction sinus
   {: RESULT =  Math.sin(e); :}
+  |
+      TK_COS TK_OP expression:e TK_CP      // effectue la fonction sinus
+  {: RESULT =  Math.cos(e); :}
+  |
+      TK_TAN TK_OP expression:e TK_CP      // effectue la fonction sinus
+  {: RESULT =  Math.tan(e); :}
+  |
+      TK_SQRT TK_OP expression:e TK_CP      // effectue la fonction sinus
+  {: RESULT =  Math.sqrt(e); :}
+  |
+      TK_LOG TK_OP expression:e TK_CP      // effectue la fonction sinus
+  {: RESULT =  Math.log(e); :}
   | 
       TK_VAL:v                              // valeur
 	{: RESULT = v; :}
