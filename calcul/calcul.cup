@@ -25,6 +25,7 @@ non terminal Double expression;
 precedence left TK_PLUS, TK_MINUS; 
 precedence left TK_TIMES, TK_DIVIDE;
 precedence left TK_UMINUS, TK_OP, TK_CP;
+precedence left TK_POWER;
 precedence left TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG;
 
 // objectif
@@ -53,6 +54,9 @@ expression ::=
   | 
       expression:e1 TK_DIVIDE expression:e2 // effectue la division
 	{: RESULT = e1 / e2 ; :}
+  | 
+      expression:e1 TK_POWER expression:e2 // effectue la division
+	{: RESULT = Math.pow(e1, e2) ; :}
   | 
       TK_MINUS expression:e                 // effectue l'inversion
 	{: RESULT = 0 - e ; :}
