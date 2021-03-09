@@ -11,7 +11,7 @@ en utilisant un client SSH, sur n'importe quel OS. Dans un terminal de
 commande, en passant par la machine intermédiaire `ssh-eleves.mines-paristech.fr` :
 
 ```shell
-ssh fcoelho@ssh-eleves.mines-paristech.fr
+ssh aturing@ssh-eleves.mines-paristech.fr
 ssh cal119
 ```
 
@@ -22,6 +22,14 @@ Une fois sur cette machine vous disposez de commandes diverses :
 - `nano fichier` éditeur très simple en ligne de commande
 - `git …` gestionnaire de sources
 
+Configurez votre `git` sur `cal119` :
+
+```sh
+git config --global --add user.name "Alan Turing"
+git config --global --add user.email "alan@bletchley-park.uk"
+git config --global --add pull.rebase true
+```
+
 ## Connection au GitLab
 
 Finalisez votre compte sur le [GitLab du CRI](https://gitlab.cri.mines-paristech.fr/).
@@ -29,7 +37,7 @@ Vous avez été enregistré avec votre adresse de messagerie officielle.
 
 Allez sur le projet [Compile 2020](https://gitlab.cri.mines-paristech.fr/compil-2020/compil-2020).
 *Forkez* le projet (bouton *Fork* en haut à droite), puis créez une copie de travail de votre
-version, par exemple avec l'accès via `https`.
+version sur `cal119` via `https`.
 
 ```sh
 git clone https://gitlab.cri.mines-paristech.fr/<votre-id-gitlab>/compil-2020
