@@ -14,7 +14,7 @@ parser code {:
 terminal TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE;
 terminal TK_UMINUS, TK_OP, TK_CP;
 terminal TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG;
-terminal Double TK_VAL; 
+terminal Double TK_VAL, TK_PI, TK_E; 
 
 // definition des etats intermediaires
 non terminal commandes, commande;
@@ -68,18 +68,24 @@ expression ::=
       TK_SIN TK_OP expression:e TK_CP      // effectue la fonction sinus
   {: RESULT =  Math.sin(e); :}
   |
-      TK_COS TK_OP expression:e TK_CP      // effectue la fonction sinus
+      TK_COS TK_OP expression:e TK_CP      // effectue la fonction cosinus
   {: RESULT =  Math.cos(e); :}
   |
-      TK_TAN TK_OP expression:e TK_CP      // effectue la fonction sinus
+      TK_TAN TK_OP expression:e TK_CP      // effectue la fonction tangent
   {: RESULT =  Math.tan(e); :}
   |
-      TK_SQRT TK_OP expression:e TK_CP      // effectue la fonction sinus
+      TK_SQRT TK_OP expression:e TK_CP      // effectue la fonction racine
   {: RESULT =  Math.sqrt(e); :}
   |
-      TK_LOG TK_OP expression:e TK_CP      // effectue la fonction sinus
+      TK_LOG TK_OP expression:e TK_CP      // effectue la fonction log
   {: RESULT =  Math.log(e); :}
   | 
       TK_VAL:v                              // valeur
 	{: RESULT = v; :}
+  | 
+      TK_PI:v                              // valeur de pi
+	{: RESULT = Math.PI; :}
+  | 
+      TK_E:v                              // valeur de e
+	{: RESULT = Math.E; :}
 ;
