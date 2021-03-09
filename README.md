@@ -22,7 +22,8 @@ Une fois sur cette machine vous disposez de commandes diverses :
 - `nano fichier` éditeur très simple en ligne de commande
 - `git …` gestionnaire de sources
 
-Configurez votre `git` sur `cal119` :
+Configurez votre `git` sur `cal119`, ne mettant bien sûr vos informations
+personnelles (prénom, nom, adresse mél) :
 
 ```sh
 git config --global --add user.name "Alan Turing"
