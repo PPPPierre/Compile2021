@@ -12,7 +12,10 @@ parser code {:
 
 // definition de map
 action code {:
-  Map<String, Double> dictionary = new HashMap<String, Double>();
+  Map<String, Double> dictionary_variable = new HashMap<String, Double>();
+  Map<String, Double> dictionary_cstn = new HashMap<String, Double>();
+  dictionary_cstn.put("true", 1.);
+  dictionary_cstn.put("false", 0.);
 :}
 
 // definition des token
@@ -21,16 +24,18 @@ terminal TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE;
 terminal TK_UMINUS, TK_OP, TK_CP;
 terminal TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG, TK_POWER;
 terminal Double TK_VAL, TK_PI, TK_E; 
-terminal String TK_IDENT;
+terminal String TK_IDENT, TK_BOOL;
 
 // definition des etats intermediaires
 non terminal commandes, commande, assignment;
-non terminal Double expression;
+non terminal Double expression, exprbool;
 
 // associativite et priorite des operateurs
 // order of the priorite : bottom - highest, top - lowest
 precedence left TK_PLUS, TK_MINUS; 
 precedence left TK_TIMES, TK_DIVIDE;
+precedence left TK_AND, TK_OR;
+precedence left TK_NOT;
 precedence left TK_UMINUS, TK_OP, TK_CP;
 precedence left TK_POWER;
 precedence left TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG;
@@ -48,8 +53,18 @@ commande ::=
 	{: System.out.println("# " + e); :}
     TK_DONE
   |
+      exprbool:e // expression seule, affichage
+	{:
+      if (e == 0){
+          System.out.println("# false");
+      }else{
+          System.out.println("# true");
+      } 
+  :}
+    TK_DONE
+  |
       assignment // assignement of variables
-      TK_DONE
+    TK_DONE
 ;
 
 expression ::=
@@ -100,10 +115,42 @@ expression ::=
 	{: RESULT = Math.E; :}
   |   
       TK_IDENT:k
-  {: RESULT = dictionary.get(k); :}
+  {: RESULT = dictionary_variable.get(k); :}
+  |    
+      YK_BOOL:k
+  {: RESULT = dictionary_cstn.get(k); :}
+;
+
+exprbool ::=
+      exprbool:e1 TK_AND exprbool:e2   // effectue l'operation et
+	{: 
+      if (e1*e2 == 0){
+        RESULT = 0;
+      }else{
+        RESULT = 1;
+      }
+  :}
+  | 
+      exprbool:e1 TK_OR exprbool:e2  // effectue l'operiation ou
+	{: 
+      if (e1 + e2 == 0){
+        RESULT = 0;
+      }else{
+        RESULT = 1;
+      }
+  :}
+  | 
+      TK_NOT exprbool:e  // effectue l'operation non
+	{:
+      if (e == 0){
+        RESULT = 1;
+      }else{
+        RESULT = 0;
+      }
+  :}
 ;
 
 assignment ::=
       TK_IDENT:v1 TK_ASSIGN expression:e1
-  {: dictionary.put(v1, e1); :} 
+  {: dictionary_variable.put(v1, e1); :} 
 ;

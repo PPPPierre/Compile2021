@@ -18,21 +18,25 @@ import java.io.*;
 %}
 %%
 ([1-9][0-9]*|0)	{ return new Symbol(sym.TK_VAL, new Double(yytext())); }
-"+"	    { return new Symbol(sym.TK_PLUS); }
-"-"     { return new Symbol(sym.TK_MINUS); }
-"*"     { return new Symbol(sym.TK_TIMES); }
-"/"     { return new Symbol(sym.TK_DIVIDE); }
-"("     { return new Symbol(sym.TK_OP); }
-")"     { return new Symbol(sym.TK_CP); }
-"="     { return new Symbol(sym.TK_ASSIGN); }
-"sin"   { return new Symbol(sym.TK_SIN); }
-"cos"   { return new Symbol(sym.TK_COS); }
-"tan"   { return new Symbol(sym.TK_TAN); }
-"sqrt"  { return new Symbol(sym.TK_SQRT); }
-"log"   { return new Symbol(sym.TK_LOG); }
-"^"     { return new Symbol(sym.TK_POWER); }
-"pi"    { return new Symbol(sym.TK_PI); }
-“e”     { return new Symbol(sym.TK_E); }
+"+"	                   { return new Symbol(sym.TK_PLUS); }
+"-"                    { return new Symbol(sym.TK_MINUS); }
+"*"                    { return new Symbol(sym.TK_TIMES); }
+"/"                    { return new Symbol(sym.TK_DIVIDE); }
+"&"                    { return new Symbol(sym.TK_AND); }
+"|"                    { return new Symbol(sym.TK_OR); }
+"~"                    { return new Symbol(sym.TK_NOT); }
+"("                    { return new Symbol(sym.TK_OP); }
+")"                    { return new Symbol(sym.TK_CP); }
+"="                    { return new Symbol(sym.TK_ASSIGN); }
+"sin"                  { return new Symbol(sym.TK_SIN); }
+"cos"                  { return new Symbol(sym.TK_COS); }
+"tan"                  { return new Symbol(sym.TK_TAN); }
+"sqrt"                 { return new Symbol(sym.TK_SQRT); }
+"log"                  { return new Symbol(sym.TK_LOG); }
+"^"                    { return new Symbol(sym.TK_POWER); }
+"pi"                   { return new Symbol(sym.TK_PI); }
+“e”                    { return new Symbol(sym.TK_E); }
+[true|false]         { return new Symbol(sym.TK_BOOL, new String(yytext())); }
 ([a-zA-Z][a-zA-Z0-9]*) { return new Symbol(sym.TK_IDENT, new String(yytext())); }
 
 (\n|\r|\r\n)	{ return new Symbol(sym.TK_DONE); }
