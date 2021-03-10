@@ -24,7 +24,7 @@ terminal Double TK_VAL, TK_PI, TK_E;
 terminal String TK_IDENT;
 
 // definition des etats intermediaires
-non terminal commandes, commande, assignement;
+non terminal commandes, commande, assignment;
 non terminal Double expression;
 
 // associativite et priorite des operateurs
