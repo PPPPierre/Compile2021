@@ -98,7 +98,8 @@ expression ::=
   | 
       TK_E:v                                // valeur de e
 	{: RESULT = Math.E; :}
-  |   TK_IDENT:k
+  |   
+      TK_IDENT:k
   {: RESULT = dictionary.get(k); :}
 ;
 

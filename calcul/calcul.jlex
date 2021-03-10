@@ -18,7 +18,6 @@ import java.io.*;
 %}
 %%
 ([1-9][0-9]*|0)	{ return new Symbol(sym.TK_VAL, new Double(yytext())); }
-([a-zA-Z][a-zA-Z0-9]*) { return new Symbol(sym.TK_IDENT, new String(yytext())); }
 "+"	    { return new Symbol(sym.TK_PLUS); }
 "-"     { return new Symbol(sym.TK_MINUS); }
 "*"     { return new Symbol(sym.TK_TIMES); }
@@ -34,6 +33,7 @@ import java.io.*;
 "^"     { return new Symbol(sym.TK_POWER); }
 "pi"    { return new Symbol(sym.TK_PI); }
 “e”     { return new Symbol(sym.TK_E); }
+([a-zA-Z][a-zA-Z0-9]*) { return new Symbol(sym.TK_IDENT, new String(yytext())); }
 
 (\n|\r|\r\n)	{ return new Symbol(sym.TK_DONE); }
 [\ \t\f] { /* ignore espaces et assimiles. */ }
