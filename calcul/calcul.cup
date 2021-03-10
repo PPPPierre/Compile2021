@@ -20,8 +20,8 @@ action code {:
 
 // definition des token
 terminal TK_ASSIGN;
-terminal TK_PLUS, TK_UMINUS, TK_TIMES, TK_DIVIDE, TK_DONE;
-termianl TK_AND, TK_OR, TK_NOT, TK_UMINUS, TK_OP, TK_CP;
+terminal TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE;
+termianl TK_UMINUS, TK_OP, TK_CP, TK_AND, TK_OR, TK_NOT;
 terminal TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG, TK_POWER;
 terminal Double TK_VAL, TK_PI, TK_E; 
 terminal String TK_IDENT, TK_BOOL;
@@ -124,7 +124,7 @@ expression ::=
 
 exprbool ::=
       exprbool:e1 TK_AND exprbool:e2   // effectue l'operation et
-	{: 
+  {: 
       if (e1*e2 == 0){
         RESULT = 0;
       }else{
@@ -133,7 +133,7 @@ exprbool ::=
   :}
   | 
       exprbool:e1 TK_OR exprbool:e2  // effectue l'operiation ou
-	{: 
+  {: 
       if (e1 + e2 == 0){
         RESULT = 0;
       }else{
@@ -142,7 +142,7 @@ exprbool ::=
   :}
   | 
       TK_NOT exprbool:e  // effectue l'operation non
-	{:
+  {:
       if (e == 0){
         RESULT = 1;
       }else{
