@@ -14,10 +14,12 @@ parser code {:
 action code {:
   Map<String, Double> dictionary_variable = new HashMap<String, Double>();
   Map<String, Double> dictionary_cstn = new HashMap<String, Double>();
-  Double d_true = 1;
-  Double d_false = 0;
-  dictionary_cstn.put("true", d_true);
-  dictionary_cstn.put("false", d_false);
+  Double v_true = 1;
+  Double v_false = 0;
+  String k_true = "true";
+  String k_false = "false";
+  dictionary_cstn.put(k_true, v_true);
+  dictionary_cstn.put(k_false, v_false);
 :}
 
 // definition des token
