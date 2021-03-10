@@ -115,7 +115,7 @@ expression ::=
       TK_IDENT:k
   {: RESULT = dictionary_variable.get(k); :}
   |    
-      YK_BOOL:k
+      TK_BOOL:k
   {: RESULT = dictionary_cstn.get(k); :}
 ;
 
