@@ -36,7 +36,8 @@ import java.io.*;
 "^"                    { return new Symbol(sym.TK_POWER); }
 "pi"                   { return new Symbol(sym.TK_PI); }
 “e”                    { return new Symbol(sym.TK_E); }
-[true|false]         { return new Symbol(sym.TK_BOOL, new String(yytext())); }
+"true"                 { return new Symbol(sym.TK_TRUE, new Double(1)); }
+"false"                { return new Symbol(sym.TK_FALSE, new Double(0)); }
 ([a-zA-Z][a-zA-Z0-9]*) { return new Symbol(sym.TK_IDENT, new String(yytext())); }
 
 (\n|\r|\r\n)	{ return new Symbol(sym.TK_DONE); }

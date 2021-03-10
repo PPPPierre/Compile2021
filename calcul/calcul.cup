@@ -13,19 +13,12 @@ parser code {:
 // definition de map
 action code {:
   Map<String, Double> dictionary_variable = new HashMap<String, Double>();
-  Map<String, Double> dictionary_cstn = new HashMap<String, Double>();
-  Double v_true = 1;
-  Double v_false = 0;
-  String k_true = "true";
-  String k_false = "false";
-  dictionary_cstn.put(k_true, v_true);
-  dictionary_cstn.put(k_false, v_false);
 :}
 
 // definition des token
 terminal TK_ASSIGN, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE, TK_UMINUS, TK_OP, TK_CP, TK_AND, TK_OR, TK_NOT, TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG, TK_POWER;
-terminal Double TK_VAL, TK_PI, TK_E; 
-terminal String TK_IDENT, TK_BOOL;
+terminal Double TK_VAL, TK_PI, TK_BOOL, TK_E, TK_TRUE, TK_FALSE; 
+terminal String TK_IDENT;
 
 // definition des etats intermediaires
 non terminal commandes, commande, assignment;
@@ -119,8 +112,16 @@ expression ::=
       TK_IDENT:k
   {: RESULT = dictionary_variable.get(k); :}
   |    
-      TK_BOOL:k
-  {: RESULT = dictionary_cstn.get(k); :}
+      TK_BOOL:e
+  {: RESULT = e; :}
+;
+
+TK_BOOL ::=
+      TK_TRUE:e 
+  {: RESULT = e; :}
+  |
+      TK_FALSE:e
+  {: RESULT = e; :}
 ;
 
 exprbool ::=

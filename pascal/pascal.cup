@@ -20,11 +20,13 @@ action code {:
   }
 :}
 
-terminal TK_SEP, TK_PRINT;
+terminal TK_SEP, TK_PRINT, TK_PLUS;
 terminal Integer TK_ICNST;
 
 non terminal target;
 non terminal String program, linst, inst, print, expr;
+
+precedence left TK_PLUS;
 
 start with target;
 
@@ -46,4 +48,6 @@ print ::= TK_PRINT expr:e
 	:}
 	;
 expr ::= TK_ICNST:i {: RESULT = "\tPUSH\t" + i + "\n"; :}
+  |
+  expr:e1 TK_PLUS expr:e2 {: RESULT = e1 + e2 + "\tADD\n" :}
 	;
