@@ -20,13 +20,14 @@ action code {:
   }
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP;
 terminal Integer TK_ICNST;
 
 non terminal target;
 non terminal String program, linst, inst, print, expr;
 
-precedence left TK_PLUS;
+precedence left TK_PLUS, TK_MINUS;
+precedence left TK_TIMES, TK_DIVIDE;
 
 start with target;
 
@@ -50,4 +51,10 @@ print ::= TK_PRINT expr:e
 expr ::= TK_ICNST:i {: RESULT = "\tPUSH\t" + i + "\n"; :}
   |
   expr:e1 TK_PLUS expr:e2 {: RESULT = e1 + e2 + "\tADD\n"; :}
+  |
+  expr:e1 TK_MINUS expr:e2 {: RESULT = e1 + e2 + "\tSUB\n"; :}
+  |
+  expr:e1 TK_TIMES expr:e2 {: RESULT = e1 + e2 + "\tMUL\n"; :}
+  |
+  expr:e1 TK_DIVIDE expr:e2 {: RESULT = e1 + e2 + "\tDIV\n"; :}
 	;

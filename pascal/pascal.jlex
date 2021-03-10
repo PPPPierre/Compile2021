@@ -13,6 +13,11 @@ ICNST = [0-9]+
 "print"		{ return new Symbol(sym.TK_PRINT); }
 ";"		    { return new Symbol(sym.TK_SEP); }
 "+"         { return new Symbol(sym.TK_PLUS); }
+"-"         { return new Symbol(sym.TK_MINUS); }
+"*"         { return new Symbol(sym.TK_TIMES); }
+"/"         { return new Symbol(sym.TK_DIVIDE); }
+"("         { return new Symbol(sym.TK_OP); }
+")"         { return new Symbol(sym.TK_CP); }
 {ICNST}		{ return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
 [\ \t\n\r\f]	{ }
 .		{ System.err.println("unexpected char '" + yytext() +
