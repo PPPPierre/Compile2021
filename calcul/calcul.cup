@@ -10,14 +10,21 @@ parser code {:
   }
 :}
 
+// definition de map
+action code {:
+  Map<String, Double> dictionary = new HashMap<String, Double>();
+:}
+
 // definition des token
+terminal TK_ASSIGN;
 terminal TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE;
 terminal TK_UMINUS, TK_OP, TK_CP;
 terminal TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG;
 terminal Double TK_VAL, TK_PI, TK_E; 
+terminal String TK_IDENT;
 
 // definition des etats intermediaires
-non terminal commandes, commande;
+non terminal commandes, commande, assignement;
 non terminal Double expression;
 
 // associativite et priorite des operateurs
@@ -37,13 +44,16 @@ commandes ::=
 ;
 
 commande ::=
-    expression:e // expression seule, affichage
+      expression:e // expression seule, affichage
 	{: System.out.println("# " + e); :}
     TK_DONE
+  |
+      assignment // assignement of variables
+      TK_DONE
 ;
 
 expression ::=
-      expression:e1 TK_PLUS expression:e2  // effectue l'addition
+      expression:e1 TK_PLUS expression:e2   // effectue l'addition
 	{: RESULT = e1 + e2 ; :}
   | 
       expression:e1 TK_MINUS expression:e2  // effectue la soustraction
@@ -55,7 +65,7 @@ expression ::=
       expression:e1 TK_DIVIDE expression:e2 // effectue la division
 	{: RESULT = e1 / e2 ; :}
   | 
-      expression:e1 TK_POWER expression:e2 // effectue la division
+      expression:e1 TK_POWER expression:e2  // effectue la division
 	{: RESULT = Math.pow(e1, e2) ; :}
   | 
       TK_MINUS expression:e                 // effectue l'inversion
@@ -65,27 +75,34 @@ expression ::=
       TK_OP expression:e TK_CP              // effectue les parentheses
 	{: RESULT = e ; :}
   |
-      TK_SIN TK_OP expression:e TK_CP      // effectue la fonction sinus
+      TK_SIN TK_OP expression:e TK_CP       // effectue la fonction sinus
   {: RESULT =  Math.sin(e); :}
   |
-      TK_COS TK_OP expression:e TK_CP      // effectue la fonction cosinus
+      TK_COS TK_OP expression:e TK_CP       // effectue la fonction cosinus
   {: RESULT =  Math.cos(e); :}
   |
-      TK_TAN TK_OP expression:e TK_CP      // effectue la fonction tangent
+      TK_TAN TK_OP expression:e TK_CP       // effectue la fonction tangent
   {: RESULT =  Math.tan(e); :}
   |
       TK_SQRT TK_OP expression:e TK_CP      // effectue la fonction racine
   {: RESULT =  Math.sqrt(e); :}
   |
-      TK_LOG TK_OP expression:e TK_CP      // effectue la fonction log
+      TK_LOG TK_OP expression:e TK_CP       // effectue la fonction log
   {: RESULT =  Math.log(e); :}
   | 
       TK_VAL:v                              // valeur
 	{: RESULT = v; :}
   | 
-      TK_PI:v                              // valeur de pi
+      TK_PI:v                               // valeur de pi
 	{: RESULT = Math.PI; :}
   | 
-      TK_E:v                              // valeur de e
+      TK_E:v                                // valeur de e
 	{: RESULT = Math.E; :}
+  |   TK_IDENT:k
+  {: RESULT = dictionary.get(k); :}
+;
+
+assignment ::=
+      TK_IDENT:v1 TK_ASSIGN expression:e1
+  {: dictionary.put(v1, e1); :} 
 ;
