@@ -49,5 +49,5 @@ print ::= TK_PRINT expr:e
 	;
 expr ::= TK_ICNST:i {: RESULT = "\tPUSH\t" + i + "\n"; :}
   |
-  expr:e1 TK_PLUS expr:e2 {: RESULT = e1 + e2 + "\tADD\n" :}
+  expr:e1 TK_PLUS expr:e2 {: RESULT = e1 + e2 + "\tADD\n"; :}
 	;
