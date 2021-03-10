@@ -34,9 +34,10 @@ non terminal Double expression, exprbool;
 // order of the priorite : bottom - highest, top - lowest
 precedence left TK_PLUS, TK_MINUS; 
 precedence left TK_TIMES, TK_DIVIDE;
+precedence left TK_UMINUS;
 precedence left TK_AND, TK_OR;
 precedence left TK_NOT;
-precedence left TK_UMINUS, TK_OP, TK_CP;
+precedence left TK_OP, TK_CP;
 precedence left TK_POWER;
 precedence left TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG;
 
