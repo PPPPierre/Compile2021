@@ -85,7 +85,7 @@ expression ::=
   | 
       TK_MINUS expression:e                 // effectue l'inversion
 	{: RESULT = 0 - e ; :}
-      %prec TK_UMINUS
+  %prec TK_UMINUS
   | 
       TK_OP expression:e TK_CP              // effectue les parentheses
 	{: RESULT = e ; :}
