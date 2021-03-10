@@ -19,7 +19,7 @@ action code {:
 terminal TK_ASSIGN;
 terminal TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE;
 terminal TK_UMINUS, TK_OP, TK_CP;
-terminal TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG;
+terminal TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG, TK_POWER;
 terminal Double TK_VAL, TK_PI, TK_E; 
 terminal String TK_IDENT;
 
