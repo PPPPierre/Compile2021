@@ -10,6 +10,7 @@ parser code {:
 
 action code {:
   // attributes & methods seen from actions
+  int count = 0;
 
   String make_inst(String lab, String op, String arg) {
     return lab + "\t" + op + "\t" + arg + "\n";
@@ -18,14 +19,18 @@ action code {:
   String make_comm(String comment) {
     return ";/ " + comment + "\n";
   }
+
+  String make_label(String n){
+    return "@" + n + "_" + count++;
+  }
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_THEN, TK_ELSE, TK_OB, TK_CB;
 terminal Integer TK_ICNST;
 terminal String TK_IDENT;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment, declaration, assignment;
+non terminal String program, linst, inst, print, expr, comment, declaration, assignment, cond_IfThenElse;
 
 precedence left TK_PLUS, TK_MINUS;
 precedence left TK_TIMES, TK_DIVIDE;
@@ -40,9 +45,23 @@ program ::=
 ;
 
 linst ::= 
-  inst:i {: RESULT = i; :}
+  inst:i 
+    {: RESULT = i; :}
   | 
-  linst:l inst:i {: RESULT = l + i; :}
+  linst:l inst:i 
+    {: RESULT = l + i; :}
+  |
+  TK_IF TK_OP expr:e TK_CP TK_OB linst:li1 TK_CB TK_ELSE TK_OB linst:li2 TK_CB
+    {: 
+      String labelse = make_label("else");
+      String labfin = make_label("fin");
+      RESULT = e + "BEZ\t" + labelse + "\n" + li1 + "\tPUSH" + labfin + "\n" + "\tGOTO\n" + labelse + "\tEQU\t*\n" + li2 + labfin + "\tEQU\t*\n"; :}
+  |
+  TK_IF TK_OP expr:e TK_CP TK_OB linst:li1 TK_CB
+    {: 
+      String labelse = make_label("else");
+      String labfin = make_label("fin");
+      RESULT = e + "BEZ\t" + labelse + "\n" + "\tPUSH" + labfin + "\n" + "\tGOTO\n" + labelse + "\tEQU\t*\n" + li2 + labfin + "\tEQU\t*\n"; :}
 ;
 
 inst  ::= 
