@@ -25,7 +25,7 @@ action code {:
   }
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OB, TK_CB, TK_MOD, TK_UMINUS;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OB, TK_CB, TK_MOD, TK_UMINUS, TK_WHILE;
 terminal Integer TK_ICNST;
 terminal String TK_IDENT;
 
@@ -90,6 +90,19 @@ inst  ::=
         "\tPUSH\t" + labfin + "\n" + 
         "\tGOTO\n" + 
         labelse + "\tEQU\t*\n" + 
+        labfin + "\tEQU\t*\n"; 
+    :}
+  |
+  TK_WHILE TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB
+    {: 
+      String labfin = make_label("fin");
+      String labfin = make_label("fin");
+      RESULT = labcond + "\tEQU\t*\n" +
+        cond + 
+        "\tBEZ\t" + labfin + "\n" + 
+        li1 + 
+        "\tPUSH\t" + labcond + "\n" + 
+        "\tGOTO\n" + 
         labfin + "\tEQU\t*\n"; 
     :}
   |
