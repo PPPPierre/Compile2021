@@ -121,11 +121,11 @@ comment ::=
 ;
 
 declaration ::=
-  TK_DECL TK_IDENT:v TK_OB TK_ICNST:i TK_CB
-    {: RESULT = v + "\tDS\t" + i + "\n"; :}
-  |
   TK_DECL TK_IDENT:v 
     {: RESULT = v + "\tDS\t" + "1\n"; :}
+  |
+  TK_DECL TK_IDENT:v TK_OB TK_ICNST:i TK_CB
+    {: RESULT = v + "\tDS\t" + i + "\n"; :}
 ;
 
 assignment ::=
