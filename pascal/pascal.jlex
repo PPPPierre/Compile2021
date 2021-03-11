@@ -25,13 +25,13 @@ ICNST = [0-9]+
     "-"                     { return new Symbol(sym.TK_MINUS); }
     "*"                     { return new Symbol(sym.TK_TIMES); }
     "/"                     { return new Symbol(sym.TK_DIVIDE); }
-    "%"                    { return new Symbol(sym.TK_MOD); }
+    "%"                     { return new Symbol(sym.TK_MOD); }
     "="                     { return new Symbol(sym.TK_ASSIGN); }
     "("                     { return new Symbol(sym.TK_OP); }
     ")"                     { return new Symbol(sym.TK_CP); }
     "{"                     { return new Symbol(sym.TK_OB); }
     "}"                     { return new Symbol(sym.TK_CB); }
-    "<< INPUT"                    { return new Symbol(sym.TK_IN); }
+    "<< INPUT"              { return new Symbol(sym.TK_IN); }
     {ICNST}		            { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
     [a-zA-Z]+[a-zA-Z0-9]*   { return new Symbol(sym.TK_IDENT, new String(yytext())); }
     [\ \t\n\r\f]            { }

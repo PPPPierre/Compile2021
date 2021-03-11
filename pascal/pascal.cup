@@ -95,7 +95,7 @@ inst  ::=
   |
   TK_WHILE TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB
     {: 
-      String labfin = make_label("fin");
+      String labcond = make_label("fin");
       String labfin = make_label("fin");
       RESULT = labcond + "\tEQU\t*\n" +
         cond + 
