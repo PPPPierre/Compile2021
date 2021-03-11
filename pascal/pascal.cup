@@ -69,12 +69,12 @@ comment ::=
 
 declaration ::=
   TK_DECL TK_IDENT:v 
-  {: RESULT = v + "\tDS\t" + "1\n" :}
+  {: RESULT = v + "\tDS\t" + "1\n"; :}
 ;
 
 assignment ::=
   TK_IDENT:v TK_ASSIGN expr:e
-  {: RESULT = "\tPUSH\t" + v + "\n" + e + "\tSTORE\n" :}
+  {: RESULT = "\tPUSH\t" + v + "\n" + e + "\tSTORE\n"; :}
 ;
 
 print ::= 
