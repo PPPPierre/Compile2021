@@ -147,7 +147,7 @@ expr ::=
   |
   TK_MINUS expr:e
     {: RESULT = "\tPUSH\t 0\n" + e + "\tSUB\n"; :} 
-  %pre TK_UMINUS
+  %prec TK_UMINUS
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
