@@ -50,33 +50,6 @@ linst ::=
   | 
   linst:l inst:i 
     {: RESULT = l + i; :}
-  |
-  linst:l TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB TK_ELSE TK_OB linst:li2 TK_CB
-    {: 
-      String labelse = make_label("else");
-      String labfin = make_label("fin");
-      RESULT = cond + 
-        "BEZ\t" + labelse + "\n" + 
-        li1 + 
-        "\tPUSH\t" + labfin + "\n" + 
-        "\tGOTO\n" + 
-        labelse + "\tEQU\t*\n" + 
-        li2 + 
-        labfin + "\tEQU\t*\n"; 
-    :}
-  |
-  linst:l TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB
-    {: 
-      String labelse = make_label("else");
-      String labfin = make_label("fin");
-      RESULT = cond + 
-        "BEZ\t" + labelse + "\n" + 
-        li1 + 
-        "\tPUSH\t" + labfin + "\n" + 
-        "\tGOTO\n" + 
-        labelse + "\tEQU\t*\n" + 
-        labfin + "\tEQU\t*\n"; 
-    :}
 ;
 
 inst  ::= 
@@ -91,6 +64,33 @@ inst  ::=
   |
   comment:i 
     {: RESULT = ""; :}
+  |
+  TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB TK_ELSE TK_OB linst:li2 TK_CB
+    {: 
+      String labelse = make_label("else");
+      String labfin = make_label("fin");
+      RESULT = cond + 
+        "\tBEZ\t" + labelse + "\n" + 
+        li1 + 
+        "\tPUSH\t" + labfin + "\n" + 
+        "\tGOTO\n" + 
+        labelse + "\tEQU\t*\n" + 
+        li2 + 
+        labfin + "\tEQU\t*\n"; 
+    :}
+  |
+  TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB
+    {: 
+      String labelse = make_label("else");
+      String labfin = make_label("fin");
+      RESULT = cond + 
+        "\tBEZ\t" + labelse + "\n" + 
+        li1 + 
+        "\tPUSH\t" + labfin + "\n" + 
+        "\tGOTO\n" + 
+        labelse + "\tEQU\t*\n" + 
+        labfin + "\tEQU\t*\n"; 
+    :}
   |
   TK_SEP 
     {: RESULT = ""; :}
