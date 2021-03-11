@@ -13,19 +13,22 @@ ICNST = [0-9]+
 %%
 <YYINITIAL>
 {
-    "print"		    { return new Symbol(sym.TK_PRINT); }
+    "print"		            { return new Symbol(sym.TK_PRINT); }
     \/\/[^\n]*              { return new Symbol(sym.TK_LCOMM); }
     "/*"                    { yybegin(COMMENT); }
-    ";"		            { return new Symbol(sym.TK_SEP); }
+    "int"                   { return new Symbol(sym.TK_DECL); }
+    ";"		                { return new Symbol(sym.TK_SEP); }
     "+"                     { return new Symbol(sym.TK_PLUS); }
     "-"                     { return new Symbol(sym.TK_MINUS); }
     "*"                     { return new Symbol(sym.TK_TIMES); }
     "/"                     { return new Symbol(sym.TK_DIVIDE); }
+    "="                     { return new Symbol(sym.TK_ASSIGN); }
     "("                     { return new Symbol(sym.TK_OP); }
     ")"                     { return new Symbol(sym.TK_CP); }
-    {ICNST}		    { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
+    {ICNST}		            { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
+    [a-zA-Z]+[a-zA-Z0-9]*   { return new Symbol(sym.TK_IDENT); }
     [\ \t\n\r\f]            { }
-    .		            { System.err.println("unexpected char '" + yytext() +
+    .		                { System.err.println("unexpected char '" + yytext() +
                                                  "' line " + yyline);
                               return new Symbol(sym.error); }
 }
@@ -33,7 +36,7 @@ ICNST = [0-9]+
 <COMMENT> 
 {
 
-    "*/"              { yybegin(YYINITIAL); }
-    .|\n              { }
+    "*/"                   { yybegin(YYINITIAL); }
+    .|\n                   { }
 }
 

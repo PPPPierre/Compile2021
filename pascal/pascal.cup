@@ -20,11 +20,12 @@ action code {:
   }
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN;
 terminal Integer TK_ICNST;
+terminal String TK_IDENT;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment;
+non terminal String program, linst, inst, print, expr, comment, declaration, assignment;
 
 precedence left TK_PLUS, TK_MINUS;
 precedence left TK_TIMES, TK_DIVIDE;
@@ -45,16 +46,35 @@ linst ::=
 ;
 
 inst  ::= 
-  print:i TK_SEP {: RESULT = i; :}
-	|
-  comment:i {: RESULT = ""; :}
+  print:i TK_SEP 
+    {: RESULT = i; :}
   |
-  TK_SEP {: RESULT = ""; :}
+  declaration:i TK_SEP 
+    {: RESULT = i; :}
+  |
+  assignment:i TK_SEP 
+    {: RESULT = i; :}
+  |
+  comment:i 
+    {: RESULT = ""; :}
+  |
+  TK_SEP 
+    {: RESULT = ""; :}
 ;
 
 comment ::=
-  TK_LCOMM {: RESULT = ""; :}
+  TK_LCOMM 
+    {: RESULT = ""; :}
 ;
+
+declaration ::=
+  TK_DECL TK_IDENT:v 
+  {: RESULT = v + "\tDS\t" + "1\n" :}
+;
+
+assignment ::=
+  TK_IDENT:v TK_ASSIGN expr:e
+  {: RESULT = "\tPUSH\t" + v + "\n" + e + "\tSTORE\n" :}
 
 print ::= 
   TK_PRINT expr:e
@@ -65,15 +85,24 @@ print ::=
 ;
 
 expr ::= 
-  TK_ICNST:i {: RESULT = "\tPUSH\t" + i + "\n"; :}
+  TK_ICNST:i 
+    {: RESULT = "\tPUSH\t" + i + "\n"; :}
   |
-  expr:e1 TK_PLUS expr:e2 {: RESULT = e1 + e2 + "\tADD\n"; :}
+  TK_IDENT:v
+    {: RESULT = "\tPUSH\t" + v + "\n" + "\tLOAD\n"; :}
   |
-  expr:e1 TK_MINUS expr:e2 {: RESULT = e1 + e2 + "\tSUB\n"; :}
+  expr:e1 TK_PLUS expr:e2 
+    {: RESULT = e1 + e2 + "\tADD\n"; :}
   |
-  expr:e1 TK_TIMES expr:e2 {: RESULT = e1 + e2 + "\tMUL\n"; :}
+  expr:e1 TK_MINUS expr:e2 
+    {: RESULT = e1 + e2 + "\tSUB\n"; :}
   |
-  expr:e1 TK_DIVIDE expr:e2 {: RESULT = e1 + e2 + "\tDIV\n"; :}
+  expr:e1 TK_TIMES expr:e2 
+    {: RESULT = e1 + e2 + "\tMUL\n"; :}
   |
-  TK_OP expr:e TK_CP {: RESULT = e; :}
+  expr:e1 TK_DIVIDE expr:e2 
+    {: RESULT = e1 + e2 + "\tDIV\n"; :}
+  |
+  TK_OP expr:e TK_CP 
+    {: RESULT = e; :}
 ;
