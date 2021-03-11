@@ -18,7 +18,6 @@ ICNST = [0-9]+
     "/*"                    { yybegin(COMMENT); }
     "int"                   { return new Symbol(sym.TK_DECL); }
     "if"                    { return new Symbol(sym.TK_IF); }
-    "then"                  { return new Symbol(sym.TK_THEN}; }
     "else"                  { return new Symbol(sym.TK_ELSE); }
     ";"		                { return new Symbol(sym.TK_SEP); }
     "+"                     { return new Symbol(sym.TK_PLUS); }
