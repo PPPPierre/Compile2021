@@ -217,7 +217,7 @@ expr ::=
       "\tSWAP\n" + 
       "\tSUB\n" +
       // if result == 0?
-      "\tBGZ\t" + lab2 + "\n" +
+      "\tBEZ\t" + lab2 + "\n" +
       // store in pt1
       "\tPUSH\t" + pt2 + "\n" + 
       "\tLOAD\n" +
