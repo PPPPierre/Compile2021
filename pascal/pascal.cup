@@ -24,7 +24,7 @@ terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP,
 terminal Integer TK_ICNST;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment, lcomment, pcomment;
+non terminal String program, linst, inst, print, expr, comment;
 
 precedence left TK_PLUS, TK_MINUS;
 precedence left TK_TIMES, TK_DIVIDE;
