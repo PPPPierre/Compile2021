@@ -13,26 +13,27 @@ ICNST = [0-9]+
 %%
 <YYINITIAL>
 {
-    "print"		            { return new Symbol(sym.TK_PRINT); }
+    "print"		    { return new Symbol(sym.TK_PRINT); }
     \/\/[^\n]*              { return new Symbol(sym.TK_LCOMM); }
-    "\*"                    { yybegin(COMMENT); }
-    ";"		                { return new Symbol(sym.TK_SEP); }
+    "/*"                    { yybegin(COMMENT); }
+    ";"		            { return new Symbol(sym.TK_SEP); }
     "+"                     { return new Symbol(sym.TK_PLUS); }
     "-"                     { return new Symbol(sym.TK_MINUS); }
     "*"                     { return new Symbol(sym.TK_TIMES); }
     "/"                     { return new Symbol(sym.TK_DIVIDE); }
     "("                     { return new Symbol(sym.TK_OP); }
     ")"                     { return new Symbol(sym.TK_CP); }
-    {ICNST}		            { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
-    [\ \t\n\r\f]  { }
-    .		                { System.err.println("unexpected char '" + yytext() +
-                                                  "' line " + yyline);
+    {ICNST}		    { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
+    [\ \t\n\r\f]            { }
+    .		            { System.err.println("unexpected char '" + yytext() +
+                                                 "' line " + yyline);
                               return new Symbol(sym.error); }
 }
 
-<COMMENT>
+<COMMENT> 
 {
-    "*\"                    { yybegin(YYINITIAL); }
-    .|\n                    { }
+
+    "*/"              { yybegin(YYINITIAL); }
+    .|\n              { }
 }
 
