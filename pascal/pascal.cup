@@ -20,11 +20,11 @@ action code {:
   }
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_PCOMM;
 terminal Integer TK_ICNST;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr;
+non terminal String program, linst, inst, print, expr, comment, lcomment, pcomment;
 
 precedence left TK_PLUS, TK_MINUS;
 precedence left TK_TIMES, TK_DIVIDE;
@@ -32,23 +32,42 @@ precedence left TK_TIMES, TK_DIVIDE;
 start with target;
 
 target ::= program:s {: System.out.println(s); :}
-  ;
+;
 
-program ::= linst:l {: RESULT = l + "\tSTOP\n"; :}
-  ;
-linst ::= inst:i {: RESULT = i; :}
-  | linst:l inst:i {: RESULT = l + i; :}
-  ;
-inst  ::= print:i TK_SEP {: RESULT = i; :}
-	| TK_SEP {: RESULT = ""; :}
-	;
-print ::= TK_PRINT expr:e
-        {:
+program ::= 
+  linst:l {: RESULT = l + "\tSTOP\n"; :}
+;
+
+linst ::= 
+  inst:i {: RESULT = i; :}
+  | 
+  linst:l inst:i {: RESULT = l + i; :}
+;
+
+inst  ::= 
+  print:i TK_SEP {: RESULT = i; :}
+	|
+  comment:i {: RESULT = ""; :}
+  |
+  TK_SEP {: RESULT = ""; :}
+;
+
+comment ::=
+  TK_LCOMM {: RESULT = ""; :}
+  |
+  TK_PCOMM {: RESULT = ""; :}
+;
+
+print ::= 
+  TK_PRINT expr:e
+    {:
 	    String comment = make_comm("print...");
 	    RESULT = comment + e + "\tOUT\n";
-	:}
-	;
-expr ::= TK_ICNST:i {: RESULT = "\tPUSH\t" + i + "\n"; :}
+    :}
+;
+
+expr ::= 
+  TK_ICNST:i {: RESULT = "\tPUSH\t" + i + "\n"; :}
   |
   expr:e1 TK_PLUS expr:e2 {: RESULT = e1 + e2 + "\tADD\n"; :}
   |
@@ -57,4 +76,6 @@ expr ::= TK_ICNST:i {: RESULT = "\tPUSH\t" + i + "\n"; :}
   expr:e1 TK_TIMES expr:e2 {: RESULT = e1 + e2 + "\tMUL\n"; :}
   |
   expr:e1 TK_DIVIDE expr:e2 {: RESULT = e1 + e2 + "\tDIV\n"; :}
-	;
+  |
+  TK_OP expr:e TK_CP {: RESULT = e; :}
+;
