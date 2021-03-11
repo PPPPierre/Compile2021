@@ -27,11 +27,12 @@ ICNST = [0-9]+
     [\ \t\n\r\f]  { }
     .		                { System.err.println("unexpected char '" + yytext() +
                                                   "' line " + yyline);
-                               return new Symbol(sym.error); }
+                              return new Symbol(sym.error); }
 }
+
 <COMMENT>
 {
-    "*/"                    { yybegin(YYINITIAL); }
+    "*\"                    { yybegin(YYINITIAL); }
     .|\n                    { }
 }
 
