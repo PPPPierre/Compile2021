@@ -75,6 +75,7 @@ declaration ::=
 assignment ::=
   TK_IDENT:v TK_ASSIGN expr:e
   {: RESULT = "\tPUSH\t" + v + "\n" + e + "\tSTORE\n" :}
+;
 
 print ::= 
   TK_PRINT expr:e
