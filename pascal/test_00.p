@@ -8,3 +8,4 @@ while (a) {
     a = a - 1;
     print a;
 }
+print PGCD(12, 18);

@@ -21,11 +21,16 @@ action code {:
   }
 
   String make_label(String n){
-    return "@" + n + "_" + count++;
+    return "@lab_" + n + "_" + count++;
   }
+
+  String make_pointer(String n){
+    return "@pt_" + n + "_" + count++;
+  }
+
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OB, TK_CB, TK_MOD, TK_UMINUS, TK_WHILE;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OB, TK_CB, TK_MOD, TK_UMINUS, TK_WHILE, TK_PGCD, TK_COMMA;
 terminal Integer TK_ICNST;
 terminal String TK_IDENT;
 
@@ -164,4 +169,65 @@ expr ::=
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
+  |
+  TK_PGCD TK_OP expr:e1 TK_COMMA expr:e2 TK_CP
+    {: 
+      String lab0 = make_label("pgcd");
+      String lab1 = make_label("pgcd");
+      String lab2 = make_label("pgcd");
+      String pt1 = make_pointer("pgcd");
+      String pt2 = make_pointer("pgcd");
+      RESULT = pt1 + "\tDS\t1\n" +
+      pt2 + "\tDS\t1\n" + 
+      // if e1 > e2 ?
+      e1 +
+      e2 +
+      "\tSUB\n" +
+      "\tBGZ\t" + lab0 + "\n" +
+      // cas e1 <= e2
+      "\tPUSH\t" + pt1 + "\n" + 
+      e2 + 
+      "\tSTORE\n" +
+      "\tPUSH\t" + pt2 + "\n" + 
+      e1 + 
+      "\tSTORE\n" +
+      // cas e1 > e2
+      lab0 + "\tEQU\t*\n" +
+      "\tPUSH\t" + pt1 + "\n" + 
+      e1 + 
+      "\tSTORE\n" +
+      "\tPUSH\t" + pt2 + "\n" + 
+      e2 + 
+      "\tSTORE\n" +
+      // main
+      lab1 + "\tEQU\t*\n" + 
+      "\tPUSH\t" + pt1 + "\n" + 
+      "\tLOAD\n" +
+      "\tPUSH\t" + pt2 + "\n" + 
+      "\tLOAD\n" +
+      // partie modulo
+      "\tDIV\n" + 
+      "\tPUSH\t" + pt2 + "\n" + 
+      "\tLOAD\n" +
+      "\tMUL\n" + 
+      "\tPUSH\t" + pt1 + "\n" + 
+      "\tLOAD\n" +
+      "\tSWAP\n" + 
+      "\tSUB\n" +
+      // if result == 0?
+      "\tBGZ\t" + lab2 + "\n" +
+      // store in pt1
+      "\tPUSH\t" + pt2 + "\n" + 
+      "\tLOAD\n" +
+      "\tPUSH\t" + pt1 + "\n" + 
+      "\tSTORE\n" +
+      "\tPUSH\t" + pt2 + "\n" + 
+      "\tSTORE\n" +
+      "\tPUSH\t" + lab1 + "\n" + 
+      "\tGOTO\n" + 
+      // fin de l'algorithm
+      lab2 + "\tEQU\t*\n" + 
+      "\tPUSH\t" + pt2 + "\n" + 
+      "\tLOAD\n";
+    :}
 ;
