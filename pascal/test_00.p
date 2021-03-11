@@ -16,3 +16,8 @@ ar[2] = 4;
 print ar[0];
 print ar[1];
 print ar[2];
+;
+int *ListPR[3];
+ListPR[0] = *a;
+a = 3;
+print *ListPR[0];
