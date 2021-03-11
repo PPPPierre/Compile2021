@@ -12,7 +12,7 @@ ICNST = [0-9]+
 
 "print"		             { return new Symbol(sym.TK_PRINT); }
 \/\/[^\n]*               { return new Symbol(sym.TK_LCOMM); }
-\/\*(\S|.)*?\*\/         { return new Symbol(sym.TK_PCOMM); }
+\/\*(\n|.)*?\*\/         { return new Symbol(sym.TK_PCOMM); }
 ";"		                 { return new Symbol(sym.TK_SEP); }
 "+"                      { return new Symbol(sym.TK_PLUS); }
 "-"                      { return new Symbol(sym.TK_MINUS); }
