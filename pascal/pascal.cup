@@ -32,13 +32,15 @@ action code {:
 
 terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, 
   TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OCURLY, TK_CCURLY, TK_MOD, TK_UMINUS, 
-  TK_WHILE, TK_PGCD, TK_COMMA, TK_OB, TK_CB;
-terminal Integer TK_ICNST;
+  TK_WHILE, TK_PGCD, TK_COMMA, TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL,
+  TK_DIFF;
+terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
 non terminal target;
 non terminal String program, linst, inst, print, expr, comment, declaration, assignment;
 
+precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
 precedence left TK_TIMES, TK_DIVIDE, TK_MOD;
 precedence left TK_UMINUS;
@@ -174,6 +176,12 @@ expr ::=
   TK_ICNST:i 
     {: RESULT = "\tPUSH\t" + i + "\n"; :}
   |
+  TK_TRUE:i
+    {: RESULT = "\tPUSH\t" + i + "\n"; :}
+  |
+  TK_FALSE:i
+    {: RESULT = "\tPUSH\t" + i + "\n"; :}
+  |
   TK_IDENT:v
     {: RESULT = "\tPUSH\t" + v + "\n" + "\tLOAD\n"; :}
   |
@@ -210,7 +218,126 @@ expr ::=
     {: RESULT = e1 + e2 + "\tDIV\n"; :}
   |
   expr:e1 TK_MOD expr:e2 
-    {: RESULT = e1 + e2 + "\tDIV\n" + e2 + "\tMUL\n" + e1 + "\tSWAP\n" + "\tSUB\n"; :}
+    {: 
+      RESULT = e1 + 
+      e2 + 
+      "\tDIV\n" + 
+      e2 + 
+      "\tMUL\n" + 
+      e1 + 
+      "\tSWAP\n" + 
+      "\tSUB\n"; 
+    :}
+  |
+  expr:e1 TK_MINR expr:e2 
+    {:
+      String labegrtr = make_label("minr");
+      String labfin = make_label("minr");
+      RESULT = 
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBGZ\t" + labegrtr + "\n" +
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBEZ\t" + labegrtr + "\n" +
+      "\tPUSH\t1\n" +
+      "\tPUSH\t" + labfin + "\n" + 
+      "\tGOTO\n" + 
+      labegrtr + "\tEQU\t*\n" +
+      "\tPUSH\t0\n" +
+      labfin + "\tEQU\t*\n";    
+    :}
+  |
+  expr:e1 TK_EMINR expr:e2 
+    {:
+      String labgrtr = make_label("eminr");
+      String labfin = make_label("eminr");
+      RESULT = 
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBGZ\t" + labgrtr + "\n" +
+      "\tPUSH\t1\n" +
+      "\tPUSH\t" + labfin + "\n" + 
+      "\tGOTO\n" + 
+      labgrtr + "\tEQU\t*\n" +
+      "\tPUSH\t0\n" +
+      labfin + "\tEQU\t*\n";
+    :}
+  |
+  expr:e1 TK_GRTR expr:e2 
+    {:
+      String labgrtr = make_label("grtr");
+      String labfin = make_label("grtr");
+      RESULT = 
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBGZ\t" + labgrtr + "\n" +
+      "\tPUSH\t0\n" +
+      "\tPUSH\t" + labfin + "\n" + 
+      "\tGOTO\n" + 
+      labgrtr + "\tEQU\t*\n" +
+      "\tPUSH\t1\n" +
+      labfin + "\tEQU\t*\n";  
+    :}
+  |
+  expr:e1 TK_EGRTR expr:e2 
+    {:
+      String labegrtr = make_label("egrtr");
+      String labfin = make_label("egrtr");
+      RESULT = 
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBGZ\t" + labegrtr + "\n" +
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBEZ\t" + labegrtr + "\n" +
+      "\tPUSH\t0\n" +
+      "\tPUSH\t" + labfin + "\n" + 
+      "\tGOTO\n" + 
+      labegrtr + "\tEQU\t*\n" +
+      "\tPUSH\t1\n" +
+      labfin + "\tEQU\t*\n";  
+    :}
+  |
+  expr:e1 TK_EQUAL expr:e2 
+    {:
+      String labequal = make_label("equal");
+      String labfin = make_label("equal");
+      RESULT = 
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBEZ\t" + labeuqal + "\n" +
+      "\tPUSH\t0\n" +
+      "\tPUSH\t" + labfin + "\n" + 
+      "\tGOTO\n" + 
+      labequal + "\tEQU\t*\n" +
+      "\tPUSH\t1\n" +
+      labfin + "\tEQU\t*\n"; 
+    :}
+  |
+  expr:e1 TK_DIFF expr:e2 
+    {: 
+      String labequal = make_label("diff");
+      String labfin = make_label("diff");
+      RESULT = 
+      e1 + 
+      e2 +
+      "\tSUB\n" +
+      "\tBEZ\t" + labeuqal + "\n" +
+      "\tPUSH\t1\n" +
+      "\tPUSH\t" + labfin + "\n" + 
+      "\tGOTO\n" + 
+      labequal + "\tEQU\t*\n" +
+      "\tPUSH\t0\n" +
+      labfin + "\tEQU\t*\n";
+    :}
   |
   TK_MINUS expr:e
     {: RESULT = "\tPUSH\t 0\n" + e + "\tSUB\n"; :} 
