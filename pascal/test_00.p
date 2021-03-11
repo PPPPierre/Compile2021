@@ -12,3 +12,4 @@ print 3 * 4;
 int a;
 a = 1;
 print a + 1;
+a << INPUT;
