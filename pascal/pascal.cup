@@ -237,7 +237,12 @@ expr ::=
     {: RESULT = e1 + e2 + "\tOR\n"; :}
   |
   TK_NOT expr:e 
-    {: RESULT = e + "\tNOT\n"; :}
+    {: 
+    RESULT = e + 
+    "\tPUSH\t2\n" +
+    "\tSUB\n" +
+    "\tNOT\n"; 
+    :}
   |
   expr:e1 TK_MINR expr:e2 
     {:
