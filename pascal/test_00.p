@@ -21,6 +21,7 @@ c = 8;
 print *ListPR[0];
 */
 
+/*
 print true;
 print false;
 print a <= c;
@@ -29,3 +30,11 @@ print a == c;
 print a != c;
 print a > c;
 print a < c;
+*/
+
+print 1 & 0;
+print 1 & 1;
+print 0 | 0;
+print 1 | 0;
+print ~1;
+print ~0;

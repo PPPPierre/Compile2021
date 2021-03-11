@@ -36,6 +36,9 @@ ICNST = [0-9]+
     "*"                     { return new Symbol(sym.TK_TIMES); }
     "/"                     { return new Symbol(sym.TK_DIVIDE); }
     "%"                     { return new Symbol(sym.TK_MOD); }
+    "&"                     { return new Symbol(sym.TK_AND); }
+    "|"                     { return new Symbol(sym.TK_OR); }
+    "~"                     { return new Symbol(sym.TK_NOT); }
     "="                     { return new Symbol(sym.TK_ASSIGN); }
     "("                     { return new Symbol(sym.TK_OP); }
     ")"                     { return new Symbol(sym.TK_CP); }
