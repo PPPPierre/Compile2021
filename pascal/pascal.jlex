@@ -21,7 +21,7 @@ ICNST = [0-9]+
     "else"                  { return new Symbol(sym.TK_ELSE); }
     "while"                 { return new Symbol(sym.TK_WHILE); }
     "PGCD"                  { return new Symbol(sym.TK_PGCD); }
-    "true"                  { return new Symbol(sym.TK_TRUE， new Integer(1)); }
+    "true"                  { return new Symbol(sym.TK_TRUE, new Integer(1)); }
     "false"                 { return new Symbol(sym.TK_FALSE, new Integer(0)); }
     "<"                     { return new Symbol(sym.TK_MINR); }
     "<="                    { return new Symbol(sym.TK_EMINR); }
