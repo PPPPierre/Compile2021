@@ -135,7 +135,7 @@ assignment ::=
   TK_IDENT:v TK_OB expr:e1 TK_CB TK_ASSIGN expr:e2
     {: 
       RESULT = "\tPUSH\t" + v + "\n" + 
-      e +
+      e1 +
       "\tADD\n" + 
       e2 +
       "\tSTORE\n"; 
