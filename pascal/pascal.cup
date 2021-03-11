@@ -20,7 +20,7 @@ action code {:
   }
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_PCOMM;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM;
 terminal Integer TK_ICNST;
 
 non terminal target;
@@ -54,8 +54,6 @@ inst  ::=
 
 comment ::=
   TK_LCOMM {: RESULT = ""; :}
-  |
-  TK_PCOMM {: RESULT = ""; :}
 ;
 
 print ::= 

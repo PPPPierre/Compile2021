@@ -8,20 +8,30 @@ import java_cup.runtime.Symbol;
 
 ICNST = [0-9]+
 
-%%
+%state COMMENT
 
-"print"		             { return new Symbol(sym.TK_PRINT); }
-\/\/[^\n]*               { return new Symbol(sym.TK_LCOMM); }
-\/\*(\n|.)*?\*\/         { return new Symbol(sym.TK_PCOMM); }
-";"		                 { return new Symbol(sym.TK_SEP); }
-"+"                      { return new Symbol(sym.TK_PLUS); }
-"-"                      { return new Symbol(sym.TK_MINUS); }
-"*"                      { return new Symbol(sym.TK_TIMES); }
-"/"                      { return new Symbol(sym.TK_DIVIDE); }
-"("                      { return new Symbol(sym.TK_OP); }
-")"                      { return new Symbol(sym.TK_CP); }
-{ICNST}		             { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
-[\ \t\n\r\f]  { }
-.		{ System.err.println("unexpected char '" + yytext() +
-				     "' line " + yyline);
-                  return new Symbol(sym.error); }
+%%
+<YYINITIAL>
+{
+    "print"		            { return new Symbol(sym.TK_PRINT); }
+    \/\/[^\n]*              { return new Symbol(sym.TK_LCOMM); }
+    "\*"                    { yybegin(COMMENT); }
+    ";"		                { return new Symbol(sym.TK_SEP); }
+    "+"                     { return new Symbol(sym.TK_PLUS); }
+    "-"                     { return new Symbol(sym.TK_MINUS); }
+    "*"                     { return new Symbol(sym.TK_TIMES); }
+    "/"                     { return new Symbol(sym.TK_DIVIDE); }
+    "("                     { return new Symbol(sym.TK_OP); }
+    ")"                     { return new Symbol(sym.TK_CP); }
+    {ICNST}		            { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
+    [\ \t\n\r\f]  { }
+    .		                { System.err.println("unexpected char '" + yytext() +
+                                                  "' line " + yyline);
+                               return new Symbol(sym.error); }
+}
+<COMMENT>
+{
+    "*/"                    { yybegin(YYINITIAL); }
+    .|\n                    { }
+}
+
