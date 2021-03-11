@@ -51,17 +51,32 @@ linst ::=
   linst:l inst:i 
     {: RESULT = l + i; :}
   |
-  TK_IF TK_OP expr:e TK_CP TK_OB linst:li1 TK_CB TK_ELSE TK_OB linst:li2 TK_CB
+  TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB TK_ELSE TK_OB linst:li2 TK_CB
     {: 
       String labelse = make_label("else");
       String labfin = make_label("fin");
-      RESULT = e + "BEZ\t" + labelse + "\n" + li1 + "\tPUSH" + labfin + "\n" + "\tGOTO\n" + labelse + "\tEQU\t*\n" + li2 + labfin + "\tEQU\t*\n"; :}
+      RESULT = cond + 
+        "BEZ\t" + labelse + "\n" + 
+        li1 + 
+        "\tPUSH" + labfin + "\n" + 
+        "\tGOTO\n" + 
+        labelse + "\tEQU\t*\n" + 
+        li2 + 
+        labfin + "\tEQU\t*\n"; 
+    :}
   |
   TK_IF TK_OP expr:e TK_CP TK_OB linst:li1 TK_CB
     {: 
       String labelse = make_label("else");
       String labfin = make_label("fin");
-      RESULT = e + "BEZ\t" + labelse + "\n" + "\tPUSH" + labfin + "\n" + "\tGOTO\n" + labelse + "\tEQU\t*\n" + li2 + labfin + "\tEQU\t*\n"; :}
+      RESULT = cond + 
+        "BEZ\t" + labelse + "\n" + 
+        li1 + 
+        "\tPUSH" + labfin + "\n" + 
+        "\tGOTO\n" + 
+        labelse + "\tEQU\t*\n" + 
+        labfin + "\tEQU\t*\n"; 
+    :}
 ;
 
 inst  ::= 
