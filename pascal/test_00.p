@@ -13,10 +13,10 @@ int a;
 a = 1;
 print a + 1;
 a << INPUT;
-print a;
 int b;
 if (a) {
     b = 1;
 }else{
     b = 0;
 }
+print b;
