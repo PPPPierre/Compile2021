@@ -221,9 +221,11 @@ expr ::=
       // store in pt1
       "\tPUSH\t" + pt2 + "\n" + 
       "\tLOAD\n" +
-      "\tPUSH\t" + pt1 + "\n" + 
+      "\tPUSH\t" + pt1 + "\n" +
+      "\tSWAP\n" + 
       "\tSTORE\n" +
       "\tPUSH\t" + pt2 + "\n" + 
+      "\tSWAP\n" +
       "\tSTORE\n" +
       "\tPUSH\t" + lab1 + "\n" + 
       "\tGOTO\n" + 
