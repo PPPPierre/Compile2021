@@ -51,7 +51,7 @@ linst ::=
   linst:l inst:i 
     {: RESULT = l + i; :}
   |
-  TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB TK_ELSE TK_OB linst:li2 TK_CB
+  linst:l TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB TK_ELSE TK_OB linst:li2 TK_CB
     {: 
       String labelse = make_label("else");
       String labfin = make_label("fin");
@@ -65,7 +65,7 @@ linst ::=
         labfin + "\tEQU\t*\n"; 
     :}
   |
-  TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB
+  linst:l TK_IF TK_OP expr:cond TK_CP TK_OB linst:li1 TK_CB
     {: 
       String labelse = make_label("else");
       String labfin = make_label("fin");
