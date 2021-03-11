@@ -180,6 +180,7 @@ expr ::=
       String pt3 = make_pointer("pgcd");
       RESULT = pt1 + "\tDS\t1\n" +
       pt2 + "\tDS\t1\n" + 
+      pt3 + "\tDS\t1\n" + 
       // if e1 > e2 ?
       e1 +
       e2 +
