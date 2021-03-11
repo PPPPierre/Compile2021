@@ -30,7 +30,7 @@ terminal Integer TK_ICNST;
 terminal String TK_IDENT;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment, declaration, assignment, cond_IfThenElse;
+non terminal String program, linst, inst, print, expr, comment, declaration, assignment;
 
 precedence left TK_PLUS, TK_MINUS;
 precedence left TK_TIMES, TK_DIVIDE;
@@ -58,7 +58,7 @@ linst ::=
       RESULT = cond + 
         "BEZ\t" + labelse + "\n" + 
         li1 + 
-        "\tPUSH" + labfin + "\n" + 
+        "\tPUSH\t" + labfin + "\n" + 
         "\tGOTO\n" + 
         labelse + "\tEQU\t*\n" + 
         li2 + 
@@ -72,7 +72,7 @@ linst ::=
       RESULT = cond + 
         "BEZ\t" + labelse + "\n" + 
         li1 + 
-        "\tPUSH" + labfin + "\n" + 
+        "\tPUSH\t" + labfin + "\n" + 
         "\tGOTO\n" + 
         labelse + "\tEQU\t*\n" + 
         labfin + "\tEQU\t*\n"; 
