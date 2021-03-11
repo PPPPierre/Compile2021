@@ -191,6 +191,8 @@ expr ::=
       "\tPUSH\t" + pt2 + "\n" + 
       e1 + 
       "\tSTORE\n" +
+      "\tPUSH\t" + lab1 + "\n" + 
+      "\tGOTO\n" + 
       // cas e1 > e2
       lab0 + "\tEQU\t*\n" +
       "\tPUSH\t" + pt1 + "\n" + 
