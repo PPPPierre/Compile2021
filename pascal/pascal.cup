@@ -25,7 +25,7 @@ action code {:
   }
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OB, TK_CB;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OB, TK_CB, TK_MOD, TK_UMINUS;
 terminal Integer TK_ICNST;
 terminal String TK_IDENT;
 
@@ -33,7 +33,8 @@ non terminal target;
 non terminal String program, linst, inst, print, expr, comment, declaration, assignment;
 
 precedence left TK_PLUS, TK_MINUS;
-precedence left TK_TIMES, TK_DIVIDE;
+precedence left TK_TIMES, TK_DIVIDE, TK_MOD;
+precedence left TK_UMINUS;
 
 start with target;
 
@@ -140,6 +141,13 @@ expr ::=
   |
   expr:e1 TK_DIVIDE expr:e2 
     {: RESULT = e1 + e2 + "\tDIV\n"; :}
+  |
+  expr:e1 TK_MOD expr:e2 
+    {: RESULT = e1 + e2 + "\tDIV\n" + e2 + "\tMUL\n" + e1 + "\tSWAP\n" + "\tSUB\n"; :}
+  |
+  TK_MINUS expr:e
+    {: RESULT = "\tPUSH\t 0\n" + e + "\tSUB\n"; :} 
+  %pre TK_UMINUS
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
