@@ -13,3 +13,4 @@ int a;
 a = 1;
 print a + 1;
 a << INPUT;
+print a + 2;
