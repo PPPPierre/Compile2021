@@ -158,8 +158,8 @@ inst  ::=
   {:
     String lab_back = make_label("lab_back_" + f);
     RESULT = 
-    le +
     make_inst("", "PUSH", lab_back) +
+    le +
     make_inst("", "PUSH", "lab_call_" + f) +
     make_inst("", "GOTO", "") +
     make_inst(lab_back, "EQU", "*");
@@ -181,6 +181,7 @@ lexpr ::=
   lexpr:le TK_COMMA expr:e1 {: RESULT = le + e; :}
   |
   expr:e {: RESULT = e; :}
+;
 
 lvar ::=
   lvar:lv TK_COMMA TK_IDENT:v
