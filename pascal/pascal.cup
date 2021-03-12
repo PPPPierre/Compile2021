@@ -119,12 +119,11 @@ inst  ::=
   |
   TK_VOID TK_IDENT:f TK_OP TK_IDENT:v TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
-      String labcall = "lab_call_" + f ;
       String labfin = make_label("fin");
       RESULT =
         make_inst("", "PUSH", labfin) + 
         make_inst("", "GOTO", "") + 
-        make_inst(labcall, "EQU", "*") + 
+        make_inst(f, "EQU", "*") + 
         make_inst(v, "DS", "1") +
         make_inst("", "PUSH", v) +
         make_inst("", "SWAP", "") +
