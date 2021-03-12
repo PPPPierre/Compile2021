@@ -25,6 +25,7 @@ ICNST = [0-9]+
     "false"                 { return new Symbol(sym.TK_FALSE, new Integer(0)); }
     "exit"                  { return new Symbol(sym.TK_EXIT); }
     "void"                  { return new Symbol(sym.TK_VOID); }
+    "call"                  { return new Symbol(sym.TK_CALL); }
     "<"                     { return new Symbol(sym.TK_MINR); }
     "<="                    { return new Symbol(sym.TK_EMINR); }
     ">"                     { return new Symbol(sym.TK_GRTR); }
