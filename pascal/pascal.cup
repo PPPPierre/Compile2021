@@ -243,7 +243,7 @@ declaration ::=
   |
   TK_DECL ref:v TK_OB TK_ICNST:i TK_CB
     {: 
-      RESULT = make_inst(v, "DS", i); 
+      RESULT = make_inst(v, "DS", String(i)); 
     :}
 ;
 
