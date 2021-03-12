@@ -117,6 +117,21 @@ inst  ::=
       labfin + "\tEQU\t*\n"; 
     :}
   |
+  TK_VOID TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
+    {: 
+      String labcall = "lab_" + f ;
+      String labfin = make_label("fin");
+      RESULT =
+        make_inst("", "PUSH", labfin) + 
+        make_inst("", "GOTO", "") + 
+        make_inst(labcall, "EQU", "*") + 
+        li +
+        make_inst("", "PUSH", pt_lab_goback) +
+        make_inst("", "LOAD", "") +
+        make_inst("", "GOTO", "") + 
+        make_inst(labfin, "EQU", "*");
+    :}
+  |
   TK_EXIT TK_OP expr:e TK_CP
     {: RESULT = e + "\tSTOP\n"; :}
   |
@@ -149,21 +164,6 @@ declaration ::=
   |
   TK_DECL TK_IDENT:v TK_OB TK_ICNST:i TK_CB
     {: RESULT = v + "\tDS\t" + i + "\n"; :}
-  |
-  TK_VOID TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
-    {: 
-      String labcall = "lab_" + f ;
-      String labfin = make_label("fin");
-      RESULT =
-        make_inst("", "PUSH", labfin) + 
-        make_inst("", "GOTO", "") + 
-        make_inst(labcall, "EQU", "*") + 
-        li +
-        make_inst("", "PUSH", pt_lab_goback) +
-        make_inst("", "LOAD", "") +
-        make_inst("", "GOTO", "") + 
-        make_inst(labfin, "EQU", "*");
-    :}
 ;
 
 lident ::=
