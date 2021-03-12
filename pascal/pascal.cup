@@ -312,7 +312,6 @@ expr ::=
       "\tLOAD\n"; 
     :}
   |
-  /*
   TK_IDENT:f TK_OP expr:e TK_CP
     {: 
       String lab_back = make_label("lab_back_" + f);
@@ -323,7 +322,6 @@ expr ::=
         make_inst(lab_back, "EQU", "*");
     :}
   |
-  */
   TK_RETURN expr:e
     {: RESULT = e; :}
   |
