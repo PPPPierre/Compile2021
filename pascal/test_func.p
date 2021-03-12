@@ -1,4 +1,4 @@
-void func () {
+void abc () {
     print 2;
 }
 print 3;
