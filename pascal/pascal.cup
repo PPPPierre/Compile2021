@@ -162,8 +162,6 @@ inst  ::=
         make_inst(f, "EQU", "*") + 
         lv +
         li +
-        make_inst("", "SWAP", "") +
-        make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
     :}
   |
