@@ -34,12 +34,12 @@ action code {:
 terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, 
   TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OCURLY, TK_CCURLY, TK_MOD, TK_UMINUS, 
   TK_WHILE, TK_PGCD, TK_COMMA, TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL,
-  TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, TK_RETURN;
+  TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, TK_RETURN, TK_GLOBAL;
 terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment, declaration, assignment, lident, lvar, lexpr, func;
+non terminal String program, linst, inst, print, expr, comment, declaration, assignment, lident, lvar, lexpr, func, ref;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -206,17 +206,83 @@ inst  ::=
     {: RESULT = ""; :}
 ;
 
-func ::=
-  TK_IDENT:f
+print ::= 
+  TK_PRINT expr:e
     {:
-      current_func = f;
-      RESULT = f;
+	    String comment = make_comm("print...");
+	    RESULT = comment + e + "\tOUT\n";
+    :}
+;
+
+declaration ::=
+  TK_GLOBAL TK_IDENT:v 
+    {:
+      RESULT = make_inst(v, "DS", "1"); 
+    :}
+  |
+  TK_DECL ref:v TK_ASSIGN expr:e
+    {: 
+      RESULT =
+        make_inst(v,"DS","1") +
+        make_inst("", "PUSH", v) +
+        e + 
+        make_inst("", "STORE", "");
+    :}
+  |
+  TK_DECL ref:v
+    {:
+      RESULT = 
+        v + "\tDS\t" + "1\n"; 
+    :}
+  |
+  TK_DECL lident:lv
+    {: RESULT =  lv; :}
+  |
+  TK_DECL TK_TIMES TK_IDENT:v TK_OB TK_ICNST:i TK_CB
+    {: RESULT = v + "\tDS\t" + i + "\n"; :}
+  |
+  TK_DECL ref:v TK_OB TK_ICNST:i TK_CB
+    {: 
+      RESULT = make_inst(v, "DS", i); 
+    :}
+;
+
+assignment ::=
+  ref:v TK_ASSIGN expr:e
+    {: 
+      RESULT = 
+        "\tPUSH\t" + v + "\n" + e + "\tSTORE\n"; :}
+  |
+  ref:v TK_OB expr:e1 TK_CB TK_ASSIGN expr:e2
+    {: 
+      RESULT = 
+        "\tPUSH\t" + v + "\n" + 
+        e1 +
+        "\tADD\n" + 
+        e2 +
+        "\tSTORE\n"; 
+    :}
+  |
+  ref:v TK_IN
+    {: 
+      RESULT = 
+        "\tPUSH\t" + v + "\n" + 
+        "\tIN\n" + 
+        "\tSTORE\n"; 
     :}
 ;
 
 comment ::=
   TK_LCOMM 
     {: RESULT = ""; :}
+;
+
+func ::=
+  TK_IDENT:f
+    {:
+      current_func = f;
+      RESULT = f;
+    :}
 ;
 
 lexpr ::=
@@ -226,103 +292,46 @@ lexpr ::=
 ;
 
 lvar ::=
-  lvar:lv TK_COMMA TK_IDENT:v
+  lvar:lv TK_COMMA ref:v
     {:
-      String var_name = current_func + ":" + v;
       RESULT =
         lv +
-        make_inst(var_name, "DS", "1") +
-        make_inst("", "PUSH", var_name) +
+        make_inst(v, "DS", "1") +
+        make_inst("", "PUSH", v) +
         make_inst("", "SWAP", "") +
         make_inst("", "STORE", "");
     :}
   |
-  TK_IDENT:v
+  ref:v
     {:
-      String var_name = current_func + ":" + v;
       RESULT =
-        make_inst(var_name, "DS", "1") +
-        make_inst("", "PUSH", var_name) +
+        make_inst(v, "DS", "1") +
+        make_inst("", "PUSH", v) +
         make_inst("", "SWAP", "") +
         make_inst("", "STORE", "");
     :}
-;
-
-declaration ::=
-  TK_DECL TK_IDENT:v TK_ASSIGN expr:e
-    {: 
-      String var_name = current_func + ":" + v;
-      RESULT = var_name + "\tDS\t" + "1\n" +
-      "\tPUSH\t" + var_name + "\n" + 
-      e + 
-      "\tSTORE\n";
-    :}
-  |
-  TK_DECL TK_IDENT:v 
-    {:
-      String var_name = current_func + ":" + v; 
-      RESULT = 
-      var_name + "\tDS\t" + "1\n"; :}
-  |
-  TK_DECL lident:lv
-    {: RESULT =  lv; :}
-  |
-  TK_DECL TK_TIMES TK_IDENT:v TK_OB TK_ICNST:i TK_CB
-    {: RESULT = v + "\tDS\t" + i + "\n"; :}
-  |
-  TK_DECL TK_IDENT:v TK_OB TK_ICNST:i TK_CB
-    {: RESULT = v + "\tDS\t" + i + "\n"; :}
 ;
 
 lident ::=
-  lident:lv TK_COMMA TK_IDENT:v 
+  lident:lv TK_COMMA ref:v
     {: 
-      String var_name = current_func + ":" + v;
       RESULT = lv + 
-      make_inst(var_name, "DS", "1"); 
+      make_inst(v, "DS", "1"); 
     :}
   |
-  TK_IDENT:v1 TK_COMMA TK_IDENT:v2 
+  ref:v1 TK_COMMA ref:v2
     {:
-      String var_name_1 = current_func + ":" + v1;
-      String var_name_2 = current_func + ":" + v2;
       RESULT = 
-      make_inst(var_name_1, "DS", "1") +
-      make_inst(var_name_2, "DS", "1"); 
+        make_inst(v1, "DS", "1") +
+        make_inst(v2, "DS", "1"); 
     :}
 ;
 
-assignment ::=
-  TK_IDENT:v TK_ASSIGN expr:e
-    {: 
-      String var_name = current_func + ":" + v;
-      RESULT = 
-      "\tPUSH\t" + var_name + "\n" + e + "\tSTORE\n"; :}
-  |
-  TK_IDENT:v TK_OB expr:e1 TK_CB TK_ASSIGN expr:e2
-    {: 
-      String var_name = current_func + ":" + v;
-      RESULT = "\tPUSH\t" + var_name + "\n" + 
-      e1 +
-      "\tADD\n" + 
-      e2 +
-      "\tSTORE\n"; 
-    :}
-  |
-  TK_IDENT:v TK_IN
-    {: 
-      String var_name = current_func + ":" + v;
-      RESULT = "\tPUSH\t" + var_name + "\n" + 
-      "\tIN\n" + 
-      "\tSTORE\n"; 
-    :}
-;
-
-print ::= 
-  TK_PRINT expr:e
+ref ::=
+  TK_IDENT:v
     {:
-	    String comment = make_comm("print...");
-	    RESULT = comment + e + "\tOUT\n";
+      String var_name = current_func + ":" + v;
+      RESULT = v;
     :}
 ;
 
@@ -336,16 +345,14 @@ expr ::=
   TK_FALSE:i
     {: RESULT = "\tPUSH\t" + i + "\n"; :}
   |
-  TK_IDENT:v
+  ref:v
     {: 
-      String var_name = current_func + ":" + v;
       RESULT = 
-        "\tPUSH\t" + var_name + "\n" + "\tLOAD\n"; :}
+        "\tPUSH\t" + v + "\n" + "\tLOAD\n"; :}
   |
-  TK_IDENT:v TK_OB expr:e TK_CB
+  ref:v TK_OB expr:e TK_CB
     {: 
-      String var_name = current_func + ":" + v;
-      RESULT = "\tPUSH\t" + var_name + "\n" + 
+      RESULT = "\tPUSH\t" + v + "\n" + 
       e +
       "\tADD\n" + 
       "\tLOAD\n"; 
@@ -372,10 +379,9 @@ expr ::=
         make_inst(lab_back, "EQU", "*");
     :}
   |
-  TK_TIMES TK_IDENT:v TK_OB expr:e TK_CB
+  TK_TIMES ref:v TK_OB expr:e TK_CB
     {: 
-      String var_name = current_func + ":" + v;
-      RESULT = "\tPUSH\t" + var_name + "\n" + 
+      RESULT = "\tPUSH\t" + v + "\n" + 
       e +
       "\tADD\n" + 
       "\tLOAD\n" +
@@ -384,8 +390,7 @@ expr ::=
   |
   TK_TIMES TK_IDENT:v
     {:
-      String var_name = current_func + ":" + v;
-      RESULT = "\tPUSH\t" + var_name + "\n"; :}
+      RESULT = "\tPUSH\t" + v + "\n"; :}
   |
   expr:e1 TK_PLUS expr:e2 
     {: RESULT = e1 + e2 + "\tADD\n"; :}

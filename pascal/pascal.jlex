@@ -16,7 +16,8 @@ ICNST = [0-9]+
     "print"		            { return new Symbol(sym.TK_PRINT); }
     \/\/[^\n]*              { return new Symbol(sym.TK_LCOMM); }
     "/*"                    { yybegin(COMMENT); }
-    "int"                   { return new Symbol(sym.TK_DECL); }
+    "var"                   { return new Symbol(sym.TK_DECL); }
+    "global"                { return new Symbol(sym.TK_GLOBAL); }
     "if"                    { return new Symbol(sym.TK_IF); }
     "else"                  { return new Symbol(sym.TK_ELSE); }
     "while"                 { return new Symbol(sym.TK_WHILE); }

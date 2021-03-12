@@ -1,9 +1,12 @@
-proc abc() {
-    print 4;
+global i;
+i = 4;
+
+proc geti() {
+    print i;
 }
 call abc();
 
-int i = 1;
+var i = 1;
 
 print i;
 
