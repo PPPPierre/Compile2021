@@ -24,7 +24,7 @@ ICNST = [0-9]+
     "true"                  { return new Symbol(sym.TK_TRUE, new Integer(1)); }
     "false"                 { return new Symbol(sym.TK_FALSE, new Integer(0)); }
     "exit"                  { return new Symbol(sym.TK_EXIT); }
-    "void"                  { return new Symbol(sym.TK_VOID); }
+    "proc"                  { return new Symbol(sym.TK_PROC); }
     "func"                  { return new Symbol(sym.TK_FUNC); }
     "call"                  { return new Symbol(sym.TK_CALL); }
     "return"                { return new Symbol(sym.TK_RETURN); }
