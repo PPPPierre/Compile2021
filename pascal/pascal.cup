@@ -172,7 +172,7 @@ inst  ::=
   |
   TK_CALL TK_IDENT:f TK_OP TK_CP
     {:
-      String lab_back = make_label("lab_back_" + f);
+      String lab_back = make_label("back_" + f);
       RESULT = 
         make_inst("", "PUSH", lab_back) +
         make_inst("", "PUSH", f) +
@@ -182,7 +182,7 @@ inst  ::=
   |
   TK_CALL TK_IDENT:f TK_OP lexpr:le TK_CP
     {:
-      String lab_back = make_label("lab_back_" + f);
+      String lab_back = make_label("back_" + f);
       RESULT = 
         make_inst("", "PUSH", lab_back) +
         le +
@@ -232,7 +232,7 @@ lvar ::=
       RESULT =
         lv +
         make_inst(var_name, "DS", "1") +
-        make_inst("", "PUSH", v) +
+        make_inst("", "PUSH", var_name) +
         make_inst("", "SWAP", "") +
         make_inst("", "STORE", "");
     :}
@@ -242,7 +242,7 @@ lvar ::=
       String var_name = current_func + ":" + v;
       RESULT =
         make_inst(var_name, "DS", "1") +
-        make_inst("", "PUSH", v) +
+        make_inst("", "PUSH", var_name) +
         make_inst("", "SWAP", "") +
         make_inst("", "STORE", "");
     :}
@@ -353,7 +353,7 @@ expr ::=
   |
   TK_IDENT:f TK_OP TK_CP
     {: 
-      String lab_back = make_label("lab_back_" + f);
+      String lab_back = make_label("back_" + f);
       RESULT = 
         make_inst("", "PUSH", lab_back) +
         make_inst("", "PUSH", f) +
@@ -363,7 +363,7 @@ expr ::=
   |
   TK_IDENT:f TK_OP lexpr:le TK_CP
     {: 
-      String lab_back = make_label("lab_back_" + f);
+      String lab_back = make_label("back_" + f);
       RESULT = 
         make_inst("", "PUSH", lab_back) +
         le +
