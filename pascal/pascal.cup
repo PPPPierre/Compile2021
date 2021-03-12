@@ -331,7 +331,7 @@ ref ::=
   TK_IDENT:v
     {:
       String var_name = current_func + ":" + v;
-      RESULT = v;
+      RESULT = var_name;
     :}
 ;
 
