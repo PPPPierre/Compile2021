@@ -117,17 +117,14 @@ inst  ::=
         labfin + "\tEQU\t*\n"; 
     :}
   |
-  TK_VOID TK_IDENT:f TK_OP TK_IDENT:v TK_CP TK_OCURLY linst:li TK_CCURLY
+  TK_VOID TK_IDENT:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
       RESULT =
         make_inst("", "PUSH", labfin) + 
         make_inst("", "GOTO", "") + 
         make_inst(f, "EQU", "*") + 
-        make_inst(v, "DS", "1") +
-        make_inst("", "PUSH", v) +
-        make_inst("", "SWAP", "") +
-        make_inst("", "STORE", "")+
+        lv +
         li +
         make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
@@ -155,12 +152,12 @@ inst  ::=
         make_inst(lab_back, "EQU", "*");
     :}
   |
-  TK_CALL TK_IDENT:f TK_OP expr:e TK_CP
+  TK_CALL TK_IDENT:f TK_OP lexpr:le TK_CP
     {:
       String lab_back = make_label("lab_back_" + f);
       RESULT = 
       make_inst("", "PUSH", lab_back) +
-      e +
+      le +
       make_inst("", "PUSH", f) +
       make_inst("", "GOTO", "") +
       make_inst(lab_back, "EQU", "*");
@@ -178,15 +175,12 @@ comment ::=
     {: RESULT = ""; :}
 ;
 
-/*
 lexpr ::=
   lexpr:le TK_COMMA expr:e {: RESULT = le + e; :}
   |
   expr:e {: RESULT = e; :}
 ;
-*/
 
-/*
 lvar ::=
   lvar:lv TK_COMMA TK_IDENT:v
     {:
@@ -207,7 +201,6 @@ lvar ::=
         make_inst("", "STORE", "");
     :}
 ;
-*/
 
 declaration ::=
   TK_DECL TK_IDENT:v TK_ASSIGN expr:e
