@@ -162,7 +162,7 @@ inst  ::=
       RESULT = 
       make_inst("", "PUSH", lab_back) +
       e +
-      make_inst("", "PUSH", "lab_call_" + f) +
+      make_inst("", "PUSH", f) +
       make_inst("", "GOTO", "") +
       make_inst(lab_back, "EQU", "*");
     :}
