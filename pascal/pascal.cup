@@ -150,8 +150,6 @@ inst  ::=
         make_inst("", "GOTO", "") + 
         make_inst(f, "EQU", "*") + 
         li +
-        // make_inst("", "SWAP", "") +
-        // make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
     :}
   |
@@ -195,9 +193,10 @@ inst  ::=
   |
   TK_RETURN expr:e TK_SEP
     {: 
-      RESULT = e + 
-      make_inst("", "SWAP", "") + 
-      make_inst("", "GOTO", ""); 
+      RESULT = 
+        e + 
+        make_inst("", "SWAP", "") + 
+        make_inst("", "GOTO", ""); 
     :}
   |
   TK_SEP 
