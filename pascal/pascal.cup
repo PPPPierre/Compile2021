@@ -224,6 +224,16 @@ expr ::=
       "\tLOAD\n"; 
     :}
   |
+  TK_IDENT:f TK_OP TK_CP
+    {:
+      String lab_back = make_label("lab_back_" + f);
+      RESULT = 
+      make_inst("", "PUSH", lab_back) +
+      make_inst("","PUSH","lab_call_" + f) +
+      make_inst("","GOTO", "") +
+      make_inst(lab_back,"EQU", "*");
+    :}
+  |
   TK_TIMES TK_IDENT:v TK_OB expr:e TK_CB
     {: 
       RESULT = "\tPUSH\t" + v + "\n" + 
@@ -390,16 +400,6 @@ expr ::=
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
-  |
-  TK_IDENT:f TK_OP TK_CP
-    {:
-      String lab_back = make_label("lab_back_" + f);
-      RESULT = 
-      make_inst("", "PUSH", lab_back) +
-      make_inst("","PUSH","lab_call_" + f) +
-      make_inst("","GOTO", "") +
-      make_inst(lab_back,"EQU", "*");
-    :}
   |
   TK_PGCD TK_OP expr:e1 TK_COMMA expr:e2 TK_CP
     {: 
