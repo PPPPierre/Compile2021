@@ -2,5 +2,5 @@ void func () {
     print 2;
 }
 print 3;
-func();
+call func();
 print 4;
