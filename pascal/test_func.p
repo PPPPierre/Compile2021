@@ -1,4 +1,4 @@
-void abc(i) {
+proc abc(i) {
     print i + 2;
 }
 print 3;
