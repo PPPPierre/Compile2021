@@ -117,6 +117,7 @@ inst  ::=
         labfin + "\tEQU\t*\n"; 
     :}
   |
+  /*
   TK_VOID TK_IDENT:f TK_OP TK_IDENT:v TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labcall = "lab_call_" + f ;
@@ -134,6 +135,7 @@ inst  ::=
         make_inst(labfin, "EQU", "*");
     :}
   |
+  */
   TK_VOID TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labcall = "lab_call_" + f ;
@@ -151,10 +153,10 @@ inst  ::=
     {:
       String lab_back = make_label("lab_back_" + f);
       RESULT = 
-      make_inst("", "PUSH", lab_back) +
-      make_inst("", "PUSH", "lab_call_" + f) +
-      make_inst("", "GOTO", "") +
-      make_inst(lab_back, "EQU", "*");
+        make_inst("", "PUSH", lab_back) +
+        make_inst("", "PUSH", "lab_call_" + f) +
+        make_inst("", "GOTO", "") +
+        make_inst(lab_back, "EQU", "*");
     :}
   |
   TK_CALL TK_IDENT:f TK_OP expr:e TK_CP
