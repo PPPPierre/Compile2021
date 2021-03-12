@@ -53,7 +53,7 @@ target ::= program:s {: System.out.println(s); :}
 ;
 
 program ::= 
-  linst:l {: RESULT = l + "\tSTOP\n"; :}
+  linst:l {: RESULT = make_inst(pt_lab_goback, "DS", "1") + l + "\tSTOP\n"; :}
 ;
 
 linst ::= 
