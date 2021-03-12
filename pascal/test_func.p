@@ -1,6 +1,6 @@
-void print2 () {
+void func () {
     print 2;
 }
 print 3;
-print2();
+func();
 print 4;
