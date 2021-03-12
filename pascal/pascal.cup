@@ -310,7 +310,7 @@ expr ::=
     :}
   |
   TK_RETURN expr:e
-    {: RESULT = e :}
+    {: RESULT = e; :}
   |
   TK_TIMES TK_IDENT:v TK_OB expr:e TK_CB
     {: 
