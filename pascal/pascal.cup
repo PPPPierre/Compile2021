@@ -39,7 +39,7 @@ terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment, declaration, assignment, lident, lvar, lexpr;
+non terminal String program, linst, inst, print, expr, comment, declaration, assignment, lident, lvar, lexpr, func;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -118,7 +118,7 @@ inst  ::=
         labfin + "\tEQU\t*\n"; 
     :}
   |
-  TK_PROC TK_IDENT:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
+  TK_PROC func:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
       RESULT =
@@ -129,9 +129,10 @@ inst  ::=
         li +
         make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
+      current_func = "main";
     :}
   |
-  TK_PROC TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
+  TK_PROC func:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
       RESULT =
@@ -141,9 +142,10 @@ inst  ::=
         li +
         make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
+      current_func = "main";
     :}
   |
-  TK_FUNC TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
+  TK_FUNC func:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
       RESULT =
@@ -152,9 +154,10 @@ inst  ::=
         make_inst(f, "EQU", "*") + 
         li +
         make_inst(labfin, "EQU", "*");
+      current_func = "main";
     :}
   |
-  TK_FUNC TK_IDENT:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
+  TK_FUNC func:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
       RESULT =
@@ -164,6 +167,7 @@ inst  ::=
         lv +
         li +
         make_inst(labfin, "EQU", "*");
+      current_func = "main";
     :}
   |
   TK_CALL TK_IDENT:f TK_OP TK_CP
@@ -174,7 +178,6 @@ inst  ::=
         make_inst("", "PUSH", f) +
         make_inst("", "GOTO", "") +
         make_inst(lab_back, "EQU", "*");
-      current_func = "main";
     :}
   |
   TK_CALL TK_IDENT:f TK_OP lexpr:le TK_CP
@@ -186,7 +189,6 @@ inst  ::=
         make_inst("", "PUSH", f) +
         make_inst("", "GOTO", "") +
         make_inst(lab_back, "EQU", "*");
-      current_func = "main";
     :}
   |
   TK_EXIT TK_OP expr:e TK_CP
@@ -202,6 +204,14 @@ inst  ::=
   |
   TK_SEP 
     {: RESULT = ""; :}
+;
+
+func ::=
+  TK_IDENT:f
+    {:
+      current_func = f;
+      RESULT = f;
+    :}
 ;
 
 comment ::=
@@ -349,7 +359,6 @@ expr ::=
         make_inst("", "PUSH", f) +
         make_inst("", "GOTO", "") +
         make_inst(lab_back, "EQU", "*");
-      current_func = "main";
     :}
   |
   TK_IDENT:f TK_OP lexpr:le TK_CP
@@ -361,7 +370,6 @@ expr ::=
         make_inst("", "PUSH", f) +
         make_inst("", "GOTO", "") +
         make_inst(lab_back, "EQU", "*");
-      current_func = "main";
     :}
   |
   TK_TIMES TK_IDENT:v TK_OB expr:e TK_CB
