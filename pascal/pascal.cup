@@ -11,6 +11,7 @@ parser code {:
 action code {:
   // attributes & methods seen from actions
   int count = 0;
+  String pt_lab_goback = "lab_back";
 
   String make_inst(String lab, String op, String arg) {
     return lab + "\t" + op + "\t" + arg + "\n";
@@ -33,12 +34,12 @@ action code {:
 terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, 
   TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OCURLY, TK_CCURLY, TK_MOD, TK_UMINUS, 
   TK_WHILE, TK_PGCD, TK_COMMA, TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL,
-  TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT;
+  TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_VOID;
 terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment, declaration, assignment;
+non terminal String program, linst, inst, print, expr, comment, declaration, assignment, lident;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -140,11 +141,35 @@ declaration ::=
   TK_DECL TK_IDENT:v 
     {: RESULT = v + "\tDS\t" + "1\n"; :}
   |
+  TK_DECL lident:lv
+    {: RESULT =  lv; :}
+  |
   TK_DECL TK_TIMES TK_IDENT:v TK_OB TK_ICNST:i TK_CB
     {: RESULT = v + "\tDS\t" + i + "\n"; :}
   |
   TK_DECL TK_IDENT:v TK_OB TK_ICNST:i TK_CB
     {: RESULT = v + "\tDS\t" + i + "\n"; :}
+  |
+  TK_VOID TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
+    {: 
+      String labcall = "lab_" + f ;
+      String labfin = make_label("fin");
+      RESULT =
+        make_inst("", "PUSH", labfin) + 
+        make_inst("", "GOTO", "") + 
+        make_inst(labcall, "EQU", "*") + 
+        li +
+        make_inst("", "PUSH", pt_lab_goback) +
+        make_inst("", "LOAD", "") +
+        make_inst("", "GOTO", "") + 
+        make_inst(labfin, "EQU", "*");
+    :}
+;
+
+lident ::=
+  lident:lv TK_IDENT:v {: RESULT = lv + v + "\tDS\t" + "1\n"; :}
+  |
+  TK_IDENT:v {: RESULT = v + "\tDS\t" + "1\n"; :}
 ;
 
 assignment ::=
@@ -363,6 +388,18 @@ expr ::=
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
+  |
+  TK_IDENT:f TK_OP TK_CP
+    {:
+      String lab_back = make_label(f + "_back");
+      RESULT = 
+      make_inst("", "PUSH", pt_lab_goback) +
+      make_inst("", "PUSH", lab_back) +
+      make_inst("", "STORE", "") +
+      make_inst("","PUSH","lab_" + f) +
+      make_inst("","GOTO", "") +
+      make_inst(lab_back,"EQU", "*");
+    :}
   |
   TK_PGCD TK_OP expr:e1 TK_COMMA expr:e2 TK_CP
     {: 
