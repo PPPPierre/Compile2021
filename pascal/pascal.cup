@@ -128,7 +128,7 @@ inst  ::=
         make_inst(v, "DS", "1") +
         make_inst("", "PUSH", v) +
         make_inst("", "SWAP", "") +
-        make_inst("", "STORE", "");
+        make_inst("", "STORE", "")+
         li +
         make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
