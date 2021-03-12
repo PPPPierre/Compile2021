@@ -6,7 +6,8 @@ call abc();
 print 5;
 
 func one() {
-    return 1；
+    print 0;
+    return 1;
 }
 
 print one();

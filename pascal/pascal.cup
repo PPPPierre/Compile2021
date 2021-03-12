@@ -193,7 +193,7 @@ inst  ::=
   TK_EXIT TK_OP expr:e TK_CP
     {: RESULT = e + "\tSTOP\n"; :}
   |
-  TK_RETURN expr:e
+  TK_RETURN expr:e TK_SEP
     {: 
       RESULT = e + 
       make_inst("", "SWAP", "") + 
