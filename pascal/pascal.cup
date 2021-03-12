@@ -150,8 +150,8 @@ inst  ::=
         make_inst("", "GOTO", "") + 
         make_inst(f, "EQU", "*") + 
         li +
-        make_inst("", "SWAP", "") +
-        make_inst("", "GOTO", "") + 
+        // make_inst("", "SWAP", "") +
+        // make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
     :}
   |
@@ -192,6 +192,13 @@ inst  ::=
   |
   TK_EXIT TK_OP expr:e TK_CP
     {: RESULT = e + "\tSTOP\n"; :}
+  |
+  TK_RETURN expr:e
+    {: 
+      RESULT = e + 
+      make_inst("", "SWAP", "") + 
+      make_inst("", "GOTO", ""); 
+    :}
   |
   TK_SEP 
     {: RESULT = ""; :}
@@ -321,9 +328,6 @@ expr ::=
         make_inst("", "GOTO", "") +
         make_inst(lab_back, "EQU", "*");
     :}
-  |
-  TK_RETURN expr:e
-    {: RESULT = e; :}
   |
   TK_TIMES TK_IDENT:v TK_OB expr:e TK_CB
     {: 
