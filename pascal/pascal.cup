@@ -178,7 +178,7 @@ comment ::=
 ;
 
 lexpr ::=
-  lexpr:le TK_COMMA expr:e1 {: RESULT = le + e; :}
+  lexpr:le TK_COMMA expr:e {: RESULT = le + e; :}
   |
   expr:e {: RESULT = e; :}
 ;
