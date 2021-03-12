@@ -23,6 +23,7 @@ ICNST = [0-9]+
     "PGCD"                  { return new Symbol(sym.TK_PGCD); }
     "true"                  { return new Symbol(sym.TK_TRUE, new Integer(1)); }
     "false"                 { return new Symbol(sym.TK_FALSE, new Integer(0)); }
+    "exit"                  { return new Symbol(sym.TK_EXIT); }
     "<"                     { return new Symbol(sym.TK_MINR); }
     "<="                    { return new Symbol(sym.TK_EMINR); }
     ">"                     { return new Symbol(sym.TK_GRTR); }
