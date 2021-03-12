@@ -1,6 +1,6 @@
-func abc() {
-    return 4;
+proc abc() {
+    print 4;
 }
 print 3;
-return abc();
+call abc();
 print 5;
