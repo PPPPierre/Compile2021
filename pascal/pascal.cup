@@ -158,6 +158,7 @@ inst  ::=
         make_inst("", "GOTO", "") +
         make_inst(lab_back, "EQU", "*");
     :}
+  /*
   |
   TK_CALL TK_IDENT:f TK_OP expr:e TK_CP
     {:
@@ -169,6 +170,7 @@ inst  ::=
       make_inst("", "GOTO", "") +
       make_inst(lab_back, "EQU", "*");
     :}
+  */
   |
   TK_EXIT TK_OP expr:e TK_CP
     {: RESULT = e + "\tSTOP\n"; :}
