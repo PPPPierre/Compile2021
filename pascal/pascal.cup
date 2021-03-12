@@ -142,6 +142,19 @@ inst  ::=
         make_inst(labfin, "EQU", "*");
     :}
   |
+  TK_FUNC TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
+    {: 
+      String labfin = make_label("fin");
+      RESULT =
+        make_inst("", "PUSH", labfin) + 
+        make_inst("", "GOTO", "") + 
+        make_inst(f, "EQU", "*") + 
+        li +
+        make_inst("", "SWAP", "") +
+        make_inst("", "GOTO", "") + 
+        make_inst(labfin, "EQU", "*");
+    :}
+  |
   TK_FUNC TK_IDENT:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
