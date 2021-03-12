@@ -184,12 +184,15 @@ comment ::=
     {: RESULT = ""; :}
 ;
 
+/*
 lexpr ::=
   lexpr:le TK_COMMA expr:e {: RESULT = le + e; :}
   |
   expr:e {: RESULT = e; :}
 ;
+*/
 
+/*
 lvar ::=
   lvar:lv TK_COMMA TK_IDENT:v
     {:
@@ -210,6 +213,7 @@ lvar ::=
         make_inst("", "STORE", "");
     :}
 ;
+*/
 
 declaration ::=
   TK_DECL TK_IDENT:v TK_ASSIGN expr:e
