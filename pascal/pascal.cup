@@ -11,7 +11,6 @@ parser code {:
 action code {:
   // attributes & methods seen from actions
   int count = 0;
-  String pt_lab_goback = "lab_back";
 
   String make_inst(String lab, String op, String arg) {
     return lab + "\t" + op + "\t" + arg + "\n";
@@ -53,7 +52,7 @@ target ::= program:s {: System.out.println(s); :}
 ;
 
 program ::= 
-  linst:l {: RESULT = make_inst(pt_lab_goback, "DS", "1") + l + "\tSTOP\n"; :}
+  linst:l {: RESULT = l + "\tSTOP\n"; :}
 ;
 
 linst ::= 
@@ -119,15 +118,13 @@ inst  ::=
   |
   TK_VOID TK_IDENT:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
-      String labcall = "lab_" + f ;
+      String labcall = "lab_call_" + f ;
       String labfin = make_label("fin");
       RESULT =
         make_inst("", "PUSH", labfin) + 
         make_inst("", "GOTO", "") + 
         make_inst(labcall, "EQU", "*") + 
         li +
-        make_inst("", "PUSH", pt_lab_goback) +
-        make_inst("", "LOAD", "") +
         make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
     :}
@@ -396,12 +393,10 @@ expr ::=
   |
   TK_IDENT:f TK_OP TK_CP
     {:
-      String lab_back = make_label(f + "_back");
+      String lab_back = make_label("lab_back_" + f);
       RESULT = 
-      make_inst("", "PUSH", pt_lab_goback) +
       make_inst("", "PUSH", lab_back) +
-      make_inst("", "STORE", "") +
-      make_inst("","PUSH","lab_" + f) +
+      make_inst("","PUSH","lab_call_" + f) +
       make_inst("","GOTO", "") +
       make_inst(lab_back,"EQU", "*");
     :}
