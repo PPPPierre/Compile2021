@@ -1,6 +1,6 @@
-void func (i) {
-    print i + 2;
+void func () {
+    print 2;
 }
 print 3;
-call func(2);
+call func();
 print 5;
