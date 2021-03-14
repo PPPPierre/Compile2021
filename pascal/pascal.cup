@@ -1,6 +1,7 @@
 import java_cup.runtime.*;
 import java.util.*;
 import java.io.*;
+import java.util.HashMap;
 
 parser code {:
   public static void main(String args[]) throws Exception {
@@ -29,17 +30,19 @@ action code {:
     return "@pt_" + n + "_" + count++;
   }
 
+  HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
+
 :}
 
 terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, 
   TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OCURLY, TK_CCURLY, TK_MOD, TK_UMINUS, 
-  TK_WHILE, TK_PGCD, TK_COMMA, TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL,
+  TK_WHILE, TK_COMMA, TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL,
   TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, TK_RETURN, TK_GLOBAL;
 terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
 non terminal target;
-non terminal String program, linst, inst, print, expr, comment, declaration, assignment, lident, lvar, lexpr, func, ref;
+non terminal String program, linst, inst, print, expr, comment, declaration, assignment, lident, lvar, lexpr, func, ref, ref_dec;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -220,7 +223,7 @@ declaration ::=
       RESULT = make_inst(v, "DS", "1"); 
     :}
   |
-  TK_DECL ref:v TK_ASSIGN expr:e
+  TK_DECL ref_dec:v TK_ASSIGN expr:e
     {: 
       RESULT =
         make_inst(v,"DS","1") +
@@ -229,7 +232,7 @@ declaration ::=
         make_inst("", "STORE", "");
     :}
   |
-  TK_DECL ref:v
+  TK_DECL ref_dec:v
     {:
       RESULT = 
         v + "\tDS\t" + "1\n"; 
@@ -238,10 +241,10 @@ declaration ::=
   TK_DECL lident:lv
     {: RESULT =  lv; :}
   |
-  TK_DECL TK_TIMES TK_IDENT:v TK_OB TK_ICNST:i TK_CB
+  TK_DECL TK_TIMES ref_dec:v TK_OB TK_ICNST:i TK_CB
     {: RESULT = v + "\tDS\t" + i + "\n"; :}
   |
-  TK_DECL ref:v TK_OB TK_ICNST:i TK_CB
+  TK_DECL ref_dec:v TK_OB TK_ICNST:i TK_CB
     {: 
       RESULT = v + "\tDS\t" + i + "\n";
     :}
@@ -292,7 +295,7 @@ lexpr ::=
 ;
 
 lvar ::=
-  lvar:lv TK_COMMA ref:v
+  lvar:lv TK_COMMA ref_dec:v
     {:
       RESULT =
         lv +
@@ -302,7 +305,7 @@ lvar ::=
         make_inst("", "STORE", "");
     :}
   |
-  ref:v
+  ref_dec:v
     {:
       RESULT =
         make_inst(v, "DS", "1") +
@@ -313,13 +316,14 @@ lvar ::=
 ;
 
 lident ::=
-  lident:lv TK_COMMA ref:v
+  lident:lv TK_COMMA ref_dec:v
     {: 
-      RESULT = lv + 
-      make_inst(v, "DS", "1"); 
+      RESULT = 
+        lv + 
+        make_inst(v, "DS", "1"); 
     :}
   |
-  ref:v1 TK_COMMA ref:v2
+  ref_dec:v1 TK_COMMA ref_dec:v2
     {:
       RESULT = 
         make_inst(v1, "DS", "1") +
@@ -331,6 +335,19 @@ ref ::=
   TK_IDENT:v
     {:
       String var_name = current_func + ":" + v;
+      if (var_map.containsKey(var_name)){
+        RESULT = var_name;
+      } else {
+        RESULT = v;
+      }
+    :}
+;
+
+ref_dec ::=
+  TK_IDENT:v
+    {:
+      String var_name = current_func + ":" + v;
+      var_map.put(var_name, 1);
       RESULT = var_name;
     :}
 ;
@@ -546,76 +563,4 @@ expr ::=
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
-  |
-  TK_PGCD TK_OP expr:e1 TK_COMMA expr:e2 TK_CP
-    {: 
-      String lab0 = make_label("pgcd");
-      String lab1 = make_label("pgcd");
-      String lab2 = make_label("pgcd");
-      String pt1 = make_pointer("pgcd");
-      String pt2 = make_pointer("pgcd");
-      String pt3 = make_pointer("pgcd");
-      RESULT = pt1 + "\tDS\t1\n" +
-      pt2 + "\tDS\t1\n" + 
-      pt3 + "\tDS\t1\n" + 
-      // if e1 > e2 ?
-      e1 +
-      e2 +
-      "\tSUB\n" +
-      "\tBGZ\t" + lab0 + "\n" +
-      // cas e1 <= e2
-      "\tPUSH\t" + pt1 + "\n" + 
-      e2 + 
-      "\tSTORE\n" +
-      "\tPUSH\t" + pt2 + "\n" + 
-      e1 + 
-      "\tSTORE\n" +
-      "\tPUSH\t" + lab1 + "\n" + 
-      "\tGOTO\n" + 
-      // cas e1 > e2
-      lab0 + "\tEQU\t*\n" +
-      "\tPUSH\t" + pt1 + "\n" + 
-      e1 + 
-      "\tSTORE\n" +
-      "\tPUSH\t" + pt2 + "\n" + 
-      e2 + 
-      "\tSTORE\n" +
-      // main
-      lab1 + "\tEQU\t*\n" + 
-      "\tPUSH\t" + pt1 + "\n" + 
-      "\tLOAD\n" +
-      "\tPUSH\t" + pt2 + "\n" + 
-      "\tLOAD\n" +
-      // partie modulo
-      "\tDIV\n" + 
-      "\tPUSH\t" + pt2 + "\n" + 
-      "\tLOAD\n" +
-      "\tMUL\n" + 
-      "\tPUSH\t" + pt1 + "\n" + 
-      "\tLOAD\n" +
-      "\tSWAP\n" + 
-      "\tSUB\n" +
-      "\tPUSH\t" + pt3 + "\n" +
-      "\tSWAP\n" + 
-      "\tSTORE\n" +
-      // if result == 0?
-      "\tPUSH\t" + pt3 + "\n" + 
-      "\tLOAD\n" +
-      "\tBEZ\t" + lab2 + "\n" +
-      // store in pt1
-      "\tPUSH\t" + pt1 + "\n" +
-      "\tPUSH\t" + pt2 + "\n" + 
-      "\tLOAD\n" +
-      "\tSTORE\n" +
-      "\tPUSH\t" + pt2 + "\n" + 
-      "\tPUSH\t" + pt3 + "\n" + 
-      "\tLOAD\n" +
-      "\tSTORE\n" +
-      "\tPUSH\t" + lab1 + "\n" + 
-      "\tGOTO\n" + 
-      // fin de l'algorithm
-      lab2 + "\tEQU\t*\n" + 
-      "\tPUSH\t" + pt2 + "\n" + 
-      "\tLOAD\n";
-    :}
 ;
