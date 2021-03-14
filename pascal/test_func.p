@@ -27,7 +27,7 @@ func fac(i) {
 }
 
 proc cribleErato(){
-    var map(100);
+    var map[100];
     var i = 0;
     var j = 0;
     while (i < 100){
@@ -36,12 +36,8 @@ proc cribleErato(){
     }
     map[0] = 0;
     i = 0;
-    while (i < 50){
-        resultList[i] = 0;
-        i = i + 1;
-    }
-    i = 0;
     while (i < 10){
+        print i;
         j = (i + 1) * (i + 1) - 1;
         if (map[i] == 1){
             while (j < 100){
@@ -56,6 +52,7 @@ proc cribleErato(){
         if (map[i] == 1){
             print i + 1;
         }
+        i = i + 1;
     }
 }
 
