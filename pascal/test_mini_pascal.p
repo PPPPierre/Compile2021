@@ -66,10 +66,6 @@ proc cribleErato(){
     }
 }
 
-print PGCD(120, 192);
-print fac(6);
-call cribleErato();
-
 // if_elif_else test
 func ifElifElseTest(i){
     if (i < 0){
@@ -80,6 +76,11 @@ func ifElifElseTest(i){
         return 2;
     }
 }
+
+print PGCD(120, 192);
+print fac(6);
+call cribleErato();
+
 print ifElifElseTest(-2);
 print ifElifElseTest(3);
 print ifElifElseTest(20);
