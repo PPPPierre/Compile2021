@@ -9,10 +9,11 @@ call abc();
 var i = 1;
 print i;
 
-func one(i) {
-    return i + 1;
+func fac(i) {
+    if (i>=1){
+        return i * fac(i-1);
+    } else {
+        return 1;
+    }
 }
-print one(2);
-print one(3);
-print i;
-call abc();
+print one(6);
