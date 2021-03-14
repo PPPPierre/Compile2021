@@ -91,6 +91,7 @@ inst  ::=
         make_inst(labfin, "EQU", "*");
     :}
   |
+  /*
   TK_IF TK_OP expr:cond TK_CP TK_OCURLY linst:li1 TK_CCURLY TK_ELSE TK_OCURLY linst:li2 TK_CCURLY
     {: 
       String labelse = make_label("else");
@@ -118,6 +119,7 @@ inst  ::=
       labfin + "\tEQU\t*\n"; 
     :}
   |
+  */
   TK_WHILE TK_OP expr:cond TK_CP TK_OCURLY linst:li1 TK_CCURLY
     {: 
       String labcond = make_label("fin");

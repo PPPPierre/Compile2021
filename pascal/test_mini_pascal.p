@@ -71,7 +71,6 @@ print fac(6);
 call cribleErato();
 
 // if_elif_else test
-
 func ifElifElseTest(i){
     if (i < 0){
         print 0;
