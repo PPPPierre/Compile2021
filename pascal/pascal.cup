@@ -86,7 +86,7 @@ inst  ::=
   |
   if_elif_else_state:li
     {:
-      String lab_if_fin = if_label_stack.pop(labfin);
+      String lab_if_fin = if_label_stack.pop();
       RESULT = 
         li +
         make_inst(lab_if_fin, "EQU", "*");
