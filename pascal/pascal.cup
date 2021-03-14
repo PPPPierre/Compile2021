@@ -86,7 +86,7 @@ inst  ::=
     {:
       String labfin = make_label("fin_if_state");
       RESULT = 
-        make_inst("", "PUSH", "labfin") +
+        make_inst("", "PUSH", labfin) +
         li +
         make_inst(labfin, "EQU", "*");
     :}
