@@ -73,11 +73,11 @@ call cribleErato();
 // if_elif_else test
 func ifElifElseTest(i){
     if (i < 0){
-        print 0;
-    }elif (i > 5){
-        print 1;
-    }else{
-        print 2;
+        return 0;
+    } elif (i > 5){
+        return 1;
+    } else{
+        return 2;
     }
 }
 print ifElifElseTest(-2);
