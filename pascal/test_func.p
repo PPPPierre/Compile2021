@@ -1,7 +1,7 @@
 func PGCD(i,j) {
-    int a;
-    int b;
-    int c;
+    var a;
+    var b;
+    var c;
     if (i>j){
         a = i;
         b = j;
@@ -15,7 +15,7 @@ func PGCD(i,j) {
         b = c;
         c = a % b;
     }
-    print b;
+    return b;
 }
 
 func fac(i) {
@@ -26,5 +26,39 @@ func fac(i) {
     }
 }
 
-print PGCD(12, 8);
+proc cribleErato(){
+    var map(100);
+    var i = 0;
+    var j = 0;
+    while (i < 100){
+        map[i] = 1;
+        i = i + 1;
+    }
+    map[0] = 0;
+    i = 0;
+    while (i < 50){
+        resultList[i] = 0;
+        i = i + 1;
+    }
+    i = 0;
+    while (i < 10){
+        j = (i + 1) * (i + 1) - 1;
+        if (map[i] == 1){
+            while (j < 100){
+                map[j] = 0;
+                j = j + i;
+            }
+        } 
+        i = i + 1;
+    }
+    i = 0;
+    while (i < 100){
+        if (map[i] == 1){
+            print i + 1;
+        }
+    }
+}
+
+print PGCD(120, 192);
 print fac(6);
+call cribleErato();
