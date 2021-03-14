@@ -347,7 +347,7 @@ ref_dec ::=
   TK_IDENT:v
     {:
       String var_name = current_func + ":" + v;
-      var_map.put(var_name, 1);
+      var_map.put(var_name, true);
       RESULT = var_name;
     :}
 ;
