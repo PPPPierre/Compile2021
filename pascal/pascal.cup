@@ -234,8 +234,7 @@ declaration ::=
   |
   TK_DECL ref_dec:v
     {:
-      RESULT = 
-        v + "\tDS\t" + "1\n"; 
+      RESULT = make_inst(v, "DS", "1");
     :}
   |
   TK_DECL lident:lv
