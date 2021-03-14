@@ -13,5 +13,6 @@ func one(i) {
     return i + 1;
 }
 print one(2);
+print one(3);
 print i;
 call abc();
