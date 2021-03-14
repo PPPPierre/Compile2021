@@ -281,8 +281,6 @@ elif_state ::=
   :}
 ;
 
-;
-
 print ::= 
   TK_PRINT expr:e
     {:
