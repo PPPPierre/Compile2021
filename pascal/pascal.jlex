@@ -22,6 +22,8 @@ ICNST = [0-9]+
     "elif"                  { return new Symbol(sym.TK_ELIF); }
     "else"                  { return new Symbol(sym.TK_ELSE); }
     "while"                 { return new Symbol(sym.TK_WHILE); }
+    "switch"                { return new Symbol(sym.TK_SWITCH); }
+    "case"                  { return new Symbol(sym.TK_CASE); }
     "true"                  { return new Symbol(sym.TK_TRUE, new Integer(1)); }
     "false"                 { return new Symbol(sym.TK_FALSE, new Integer(0)); }
     "exit"                  { return new Symbol(sym.TK_EXIT); }

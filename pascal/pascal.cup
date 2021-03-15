@@ -33,20 +33,26 @@ action code {:
   HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
 
   Stack<String> if_label_stack = new Stack<String>();
+  Stack<String> switch_label_stack = new Stack<String>();
+  Stack<String> switch_var_stack = new Stack<String>();
 
 :}
 
-terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_OP, TK_CP, TK_LCOMM, 
-  TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, TK_OCURLY, TK_CCURLY, TK_MOD, TK_UMINUS, 
-  TK_WHILE, TK_COMMA, TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL,
-  TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, TK_RETURN, TK_GLOBAL,
-  TK_ELIF;
+terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, 
+  TK_OP, TK_CP, TK_LCOMM, TK_DECL, TK_ASSIGN, TK_IN, TK_IF, TK_ELSE, 
+  TK_OCURLY, TK_CCURLY, TK_MOD, TK_UMINUS, TK_WHILE, TK_COMMA, 
+  TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, 
+  TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, 
+  TK_RETURN, TK_GLOBAL, TK_ELIF, TK_SWITCH, TK_CASE;
 terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
-non terminal target;
-non terminal String program, linst, inst, print, expr, comment, declaration, assignment, 
-  lident, lvar, lexpr, func, ref, ref_dec, if_elif_else_state, if_elif_state, if_state, else_state, elif_state;
+non terminal target, switch_head;
+non terminal String program, linst, inst, print, expr, comment, 
+  declaration, assignment, lident, lvar, lexpr, func, ref, 
+  ref_dec, if_elif_else_state, if_elif_state, if_state, 
+  else_state, elif_state, switch_state, case_state, list_case_state
+  ;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -90,6 +96,11 @@ inst  ::=
       RESULT = 
         li +
         make_inst(lab_if_fin, "EQU", "*");
+    :}
+  |
+  switch_state:li
+    {:
+      RESULT = li ;
     :}
   |
   /*
@@ -287,6 +298,60 @@ elif_state ::=
     make_inst("", "GOTO", "") +
     labfin + "\tEQU\t*\n"; 
   :}
+;
+
+switch_state ::=
+  switch_head TK_OCURLY list_case_state:ls TK_CCURLY
+    {:
+      String lab_switch_fin = switch_label_stack.pop();
+      switch_var_stack.pop();
+      RESULT = 
+        ls +
+        make_inst(lab_switch_fin, "EQU", "*");
+    :}
+;
+
+switch_head ::=
+  TK_SWITCH TK_OP ref:v TK_CP
+    {:
+      String lab_switch_fin = make_label("fin_switch_state");
+      switch_label_stack.push(lab_switch_fin);
+      switch_var_stack.push(v);
+    :}
+;
+
+list_case_state ::=
+  list_case_state:ls case_state:s
+    {:
+      RESULT = ls + s ;
+    :}
+  |
+  case_state:s
+    {:
+      RESULT = s ;
+    :}
+;
+
+case_state ::=
+  TK_CASE TK_ICNST:i TK_OCURLY linst:li TK_CCURLY
+    {:
+      String lab_switch_fin = switch_label_stack.peek();
+      String switch_var = switch_var_stack.peek();
+      String lab_execute = make_label("case_execute");
+      String lab_casefin = make_label("case_fin");
+      RESULT = 
+        make_inst("", "PUSH", switch_var) +
+        make_inst("", "LOAD", "") +
+        make_inst("", "SUB", "") +
+        make_inst("", "BEZ", lab_execute) +
+        make_inst("", "PUSH", lab_casefin) +
+        make_inst("", "GOTO", "") +
+        make_inst(lab_execute, "EQU", "*") +
+        li + 
+        make_inst("", "PUSH", lab_switch_fin) +
+        make_inst("", "GOTO", "") +
+        make_inst(lab_casefin, "EQU", "*");
+    :}
 ;
 
 print ::= 
