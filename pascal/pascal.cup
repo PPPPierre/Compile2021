@@ -352,7 +352,7 @@ case_state ::=
       RESULT = 
         make_inst("", "PUSH", switch_var) +
         make_inst("", "LOAD", "") +
-        "" + "\tPUSH\t" + i +
+        "" + "\tPUSH\t" + i + "\n" +
         make_inst("", "SUB", "") +
         make_inst("", "BEZ", lab_execute) +
         make_inst("", "PUSH", lab_casefin) +
