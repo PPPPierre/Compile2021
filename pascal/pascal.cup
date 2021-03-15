@@ -323,7 +323,7 @@ switch_head ::=
       switch_label_stack.push(lab_switch_fin);
       switch_var_stack.push(var_switch);
       RESULT = 
-        make_inst(var_switch, "DS", "1") + 
+        make_inst(var_switch, "DS", "1") +
         make_inst("", "PUSH", var_switch) +
         e +
         make_inst("", "LOAD", "");
@@ -352,6 +352,7 @@ case_state ::=
       RESULT = 
         make_inst("", "PUSH", switch_var) +
         make_inst("", "LOAD", "") +
+        make_inst(""， "PUSH", i) +
         make_inst("", "SUB", "") +
         make_inst("", "BEZ", lab_execute) +
         make_inst("", "PUSH", lab_casefin) +
