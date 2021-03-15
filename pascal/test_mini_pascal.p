@@ -79,7 +79,7 @@ func ifElifElseTest(i){
 
 // switch test
 func switchTest(i){
-    switch i {
+    switch (i) {
         case 1 {
             return -1;
         }
