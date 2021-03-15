@@ -56,7 +56,7 @@ non terminal String program, linst, inst, print, expr, comment,
   declaration, assignment, lident, lvar, lexpr, func, ref, 
   ref_dec, if_elif_else_state, if_elif_state, if_state, 
   else_state, elif_state, switch_state, switch_head, list_case_state,
-  case_state, while_state;
+  case_state, while_state, proc_def, proc_call, func_def, input, var;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -95,19 +95,28 @@ inst  ::=
   comment:i 
     {: RESULT = ""; :}
   |
-  if_elif_else_state:li
+  if_elif_else_state:i
     {:
       String lab_if_fin = if_label_stack.pop();
       RESULT = 
-        li +
+        i +
         make_inst(lab_if_fin, "EQU", "*");
     :}
   |
-  switch_state:li
-    {: RESULT = li ; :}
+  switch_state:i
+    {: RESULT = i ; :}
   |
-  while_state:li
-    {: RESULT = li ; :}
+  while_state:i
+    {: RESULT = i ; :}
+  |
+  proc_def:i
+    {: RESULT = i ; :}
+  |
+  proc_call:i
+    {: RESULT = i ; :}
+  |
+  func_def:i
+    {: RESULT = i ; :}
   |
   /*
   TK_IF TK_OP expr:cond TK_CP TK_OCURLY linst:li1 TK_CCURLY TK_ELSE TK_OCURLY linst:li2 TK_CCURLY
@@ -151,7 +160,6 @@ inst  ::=
         labfin + "\tEQU\t*\n"; 
     :}
   |
-  */
   TK_PROC func:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
@@ -179,6 +187,7 @@ inst  ::=
       current_func = "main";
     :}
   |
+  */
   TK_FUNC func:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
@@ -237,6 +246,83 @@ inst  ::=
     :}
   |
   TK_SEP 
+    {: RESULT = ""; :}
+;
+
+print ::= 
+  TK_PRINT expr:e
+    {:
+	    String comment = make_comm("print...");
+	    RESULT = comment + e + "\tOUT\n";
+    :}
+;
+
+declaration ::=
+  TK_GLOBAL TK_IDENT:v 
+    {:
+      RESULT = make_inst(v, "DS", "1"); 
+    :}
+  |
+  TK_DECL ref_dec:v TK_ASSIGN expr:e
+    {: 
+      RESULT =
+        make_inst(v,"DS","1") +
+        make_inst("", "PUSH", v) +
+        e + 
+        make_inst("", "STORE", "");
+    :}
+  |
+  TK_DECL ref_dec:v
+    {:
+      RESULT = make_inst(v, "DS", "1");
+    :}
+  |
+  TK_DECL lident:lv
+    {: RESULT =  lv; :}
+  |
+  TK_DECL TK_TIMES ref_dec:v
+    {:
+      RESULT = make_inst(v, "DS", "1");
+    :}
+  |
+  /*
+  TK_DECL TK_TIMES ref_dec:v TK_OB TK_ICNST:i TK_CB
+    {: RESULT = v + "\tDS\t" + i + "\n"; :}
+  |
+  */
+  TK_DECL ref_dec:v TK_OB TK_ICNST:i TK_CB
+    {: 
+      RESULT = v + "\tDS\t" + i + "\n";
+    :}
+;
+
+assignment ::=
+  ref:v TK_ASSIGN expr:e
+    {: 
+      RESULT = 
+        "\tPUSH\t" + v + "\n" + e + "\tSTORE\n"; :}
+  |
+  ref:v TK_OB expr:e1 TK_CB TK_ASSIGN expr:e2
+    {: 
+      RESULT = 
+        "\tPUSH\t" + v + "\n" + 
+        e1 +
+        "\tADD\n" + 
+        e2 +
+        "\tSTORE\n"; 
+    :}
+  |
+  ref:v TK_IN
+    {: 
+      RESULT = 
+        "\tPUSH\t" + v + "\n" + 
+        "\tIN\n" + 
+        "\tSTORE\n"; 
+    :}
+;
+
+comment ::=
+  TK_LCOMM 
     {: RESULT = ""; :}
 ;
 
@@ -384,81 +470,51 @@ while_state ::=
     :}
 ;
 
-print ::= 
-  TK_PRINT expr:e
-    {:
-	    String comment = make_comm("print...");
-	    RESULT = comment + e + "\tOUT\n";
-    :}
-;
-
-declaration ::=
-  TK_GLOBAL TK_IDENT:v 
-    {:
-      RESULT = make_inst(v, "DS", "1"); 
-    :}
-  |
-  TK_DECL ref_dec:v TK_ASSIGN expr:e
+proc_def ::=
+  TK_PROC func:f input:v TK_OCURLY linst:li TK_CCURLY
     {: 
+      String labfin = make_label("fin");
       RESULT =
-        make_inst(v,"DS","1") +
+        make_inst("", "PUSH", labfin) + 
+        make_inst("", "GOTO", "") + 
+        make_inst(f, "EQU", "*") + 
+        v +
+        li +
+        make_inst("", "GOTO", "") + 
+        make_inst(labfin, "EQU", "*");
+      current_func = "main";
+    :}
+;
+
+input ::=
+  TK_OP lvar:lv TK_CP
+    {: RESULT = lv ; :}
+  |
+  TK_OP TK_CP
+    {: RESULT = "" ; :}
+;
+
+lvar ::=
+  lvar:lv TK_COMMA var:v
+    {:
+      RESULT = lv + v ;
+    :}
+  |
+  var:v
+    {:
+      RESULT = v ;
+    :}
+;
+
+var ::= 
+  ref_dec:v 
+    {:
+      RESULT = 
+        make_inst(v, "DS", "1") +
         make_inst("", "PUSH", v) +
-        e + 
-        make_inst("", "STORE", "");
+        make_inst("", "SWAP", "") +
+        make_inst("", "STORE", "") ;
     :}
-  |
-  TK_DECL ref_dec:v
-    {:
-      RESULT = make_inst(v, "DS", "1");
-    :}
-  |
-  TK_DECL lident:lv
-    {: RESULT =  lv; :}
-  |
-  TK_DECL TK_TIMES ref_dec:v
-    {:
-      RESULT = make_inst(v, "DS", "1");
-    :}
-  |
-  /*
-  TK_DECL TK_TIMES ref_dec:v TK_OB TK_ICNST:i TK_CB
-    {: RESULT = v + "\tDS\t" + i + "\n"; :}
-  |
-  */
-  TK_DECL ref_dec:v TK_OB TK_ICNST:i TK_CB
-    {: 
-      RESULT = v + "\tDS\t" + i + "\n";
-    :}
-;
-
-assignment ::=
-  ref:v TK_ASSIGN expr:e
-    {: 
-      RESULT = 
-        "\tPUSH\t" + v + "\n" + e + "\tSTORE\n"; :}
-  |
-  ref:v TK_OB expr:e1 TK_CB TK_ASSIGN expr:e2
-    {: 
-      RESULT = 
-        "\tPUSH\t" + v + "\n" + 
-        e1 +
-        "\tADD\n" + 
-        e2 +
-        "\tSTORE\n"; 
-    :}
-  |
-  ref:v TK_IN
-    {: 
-      RESULT = 
-        "\tPUSH\t" + v + "\n" + 
-        "\tIN\n" + 
-        "\tSTORE\n"; 
-    :}
-;
-
-comment ::=
-  TK_LCOMM 
-    {: RESULT = ""; :}
 ;
 
 func ::=
@@ -473,27 +529,6 @@ lexpr ::=
   lexpr:le TK_COMMA expr:e {: RESULT = le + e; :}
   |
   expr:e {: RESULT = e; :}
-;
-
-lvar ::=
-  lvar:lv TK_COMMA ref_dec:v
-    {:
-      RESULT =
-        lv +
-        make_inst(v, "DS", "1") +
-        make_inst("", "PUSH", v) +
-        make_inst("", "SWAP", "") +
-        make_inst("", "STORE", "");
-    :}
-  |
-  ref_dec:v
-    {:
-      RESULT =
-        make_inst(v, "DS", "1") +
-        make_inst("", "PUSH", v) +
-        make_inst("", "SWAP", "") +
-        make_inst("", "STORE", "");
-    :}
 ;
 
 lident ::=
