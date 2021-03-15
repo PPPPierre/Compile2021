@@ -326,7 +326,7 @@ switch_head ::=
         make_inst(var_switch, "DS", "1") +
         make_inst("", "PUSH", var_switch) +
         e +
-        make_inst("", "LOAD", "");
+        make_inst("", "STORE", "");
     :}
 ;
 
