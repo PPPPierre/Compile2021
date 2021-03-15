@@ -30,8 +30,11 @@ action code {:
     return "@pt_" + n + "_" + count++;
   }
 
-  HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
+  String make_var(String n){
+    return "@var_" + n + "_" + count++;
+  }
 
+  HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
   Stack<String> if_label_stack = new Stack<String>();
   Stack<String> switch_label_stack = new Stack<String>();
   Stack<String> switch_var_stack = new Stack<String>();
@@ -47,12 +50,12 @@ terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE,
 terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
-non terminal target, switch_head;
+non terminal target;
 non terminal String program, linst, inst, print, expr, comment, 
   declaration, assignment, lident, lvar, lexpr, func, ref, 
   ref_dec, if_elif_else_state, if_elif_state, if_state, 
-  else_state, elif_state, switch_state, case_state, list_case_state
-  ;
+  else_state, elif_state, switch_state, switch_head, list_case_state,
+  case_state;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -301,22 +304,28 @@ elif_state ::=
 ;
 
 switch_state ::=
-  switch_head TK_OCURLY list_case_state:ls TK_CCURLY
+  switch_head:sh TK_OCURLY list_case_state:ls TK_CCURLY
     {:
       String lab_switch_fin = switch_label_stack.pop();
       switch_var_stack.pop();
       RESULT = 
+        sh +
         ls +
         make_inst(lab_switch_fin, "EQU", "*");
     :}
 ;
 
 switch_head ::=
-  TK_SWITCH TK_OP ref:v TK_CP
+  TK_SWITCH TK_OP exp:e TK_CP
     {:
       String lab_switch_fin = make_label("fin_switch_state");
+      String var_switch = make_var("switch_var")
       switch_label_stack.push(lab_switch_fin);
-      switch_var_stack.push(v);
+      switch_var_stack.push(var_switch);
+      RESULT = 
+        make_inst("", "PUSH", var_switch) +
+        e +
+        make_inst("", "LOAD", "");
     :}
 ;
 
