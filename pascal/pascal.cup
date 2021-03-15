@@ -403,9 +403,11 @@ declaration ::=
       RESULT = make_inst(v, "DS", "1");
     :}
   |
+  /*
   TK_DECL TK_TIMES ref_dec:v TK_OB TK_ICNST:i TK_CB
     {: RESULT = v + "\tDS\t" + i + "\n"; :}
   |
+  */
   TK_DECL ref_dec:v TK_OB TK_ICNST:i TK_CB
     {: 
       RESULT = v + "\tDS\t" + i + "\n";
@@ -558,6 +560,7 @@ expr ::=
         make_inst(lab_back, "EQU", "*");
     :}
   |
+  /*
   TK_TIMES ref:v TK_OB expr:e TK_CB
     {: 
       RESULT = "\tPUSH\t" + v + "\n" + 
@@ -571,6 +574,7 @@ expr ::=
     {:
       RESULT = "\tPUSH\t" + v + "\n"; :}
   |
+  */
   expr:e1 TK_PLUS expr:e2 
     {: RESULT = e1 + e2 + "\tADD\n"; :}
   |
