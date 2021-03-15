@@ -188,7 +188,6 @@ inst  ::=
       current_func = "main";
     :}
   |
-  */
   TK_FUNC func:f TK_OP TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
@@ -214,7 +213,6 @@ inst  ::=
       current_func = "main";
     :}
   |
-  /*
   TK_CALL TK_IDENT:f TK_OP TK_CP
     {:
       String lab_back = make_label("back_" + f);
@@ -489,9 +487,45 @@ proc_def ::=
     :}
 ;
 
+proc_call ::=
+  TK_CALL TK_IDENT:f input_call:ic
+    {:
+      String lab_back = make_label("back_" + f);
+      RESULT = 
+        make_inst("", "PUSH", lab_back) +
+        ic +
+        make_inst("", "PUSH", f) +
+        make_inst("", "GOTO", "") +
+        make_inst(lab_back, "EQU", "*");
+    :}
+;
+
+func_def ::=
+  TK_FUNC func:f input_dec:id TK_OCURLY linst:li TK_CCURLY
+    {: 
+      String labfin = make_label("fin");
+      RESULT =
+        make_inst("", "PUSH", labfin) + 
+        make_inst("", "GOTO", "") + 
+        make_inst(f, "EQU", "*") + 
+        id +
+        li +
+        make_inst(labfin, "EQU", "*");
+      current_func = "main";
+    :}
+;
+
 input_dec ::=
   TK_OP lvar:lv TK_CP
     {: RESULT = lv ; :}
+  |
+  TK_OP TK_CP
+    {: RESULT = "" ; :}
+;
+
+input_call ::=
+  TK_OP lexpr:le TK_CP
+    {: RESULT = le ; :}
   |
   TK_OP TK_CP
     {: RESULT = "" ; :}
@@ -518,27 +552,6 @@ var ::=
         make_inst("", "SWAP", "") +
         make_inst("", "STORE", "") ;
     :}
-;
-
-proc_call ::=
-  TK_CALL TK_IDENT:f input_call:ic
-    {:
-      String lab_back = make_label("back_" + f);
-      RESULT = 
-        make_inst("", "PUSH", lab_back) +
-        ic +
-        make_inst("", "PUSH", f) +
-        make_inst("", "GOTO", "") +
-        make_inst(lab_back, "EQU", "*");
-    :}
-;
-
-input_call ::=
-  TK_OP lexpr:le TK_CP
-    {: RESULT = le ; :}
-  |
-  TK_OP TK_CP
-    {: RESULT = "" ; :}
 ;
 
 func ::=
