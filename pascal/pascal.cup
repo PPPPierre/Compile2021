@@ -56,7 +56,7 @@ non terminal String program, linst, inst, print, expr, comment,
   declaration, assignment, lident, lvar, lexpr, func, ref, 
   ref_dec, if_elif_else_state, if_elif_state, if_state, 
   else_state, elif_state, switch_state, switch_head, list_case_state,
-  case_state;
+  case_state, while_state;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -104,9 +104,10 @@ inst  ::=
     :}
   |
   switch_state:li
-    {:
-      RESULT = li ;
-    :}
+    {: RESULT = li ; :}
+  |
+  while_state:li
+    {: RESULT = li ; :}
   |
   /*
   TK_IF TK_OP expr:cond TK_CP TK_OCURLY linst:li1 TK_CCURLY TK_ELSE TK_OCURLY linst:li2 TK_CCURLY
@@ -136,7 +137,6 @@ inst  ::=
       labfin + "\tEQU\t*\n"; 
     :}
   |
-  */
   TK_WHILE TK_OP expr:cond TK_CP TK_OCURLY linst:li1 TK_CCURLY
     {: 
       String labcond = make_label("fin");
@@ -151,6 +151,7 @@ inst  ::=
         labfin + "\tEQU\t*\n"; 
     :}
   |
+  */
   TK_PROC func:f TK_OP lvar:lv TK_CP TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
@@ -364,6 +365,22 @@ case_state ::=
         make_inst("", "PUSH", lab_switch_fin) +
         make_inst("", "GOTO", "") +
         make_inst(lab_casefin, "EQU", "*");
+    :}
+;
+
+while_state ::=
+  TK_WHILE TK_OP expr:cond TK_CP TK_OCURLY linst:li1 TK_CCURLY
+    {: 
+      String labcond = make_label("fin");
+      String labfin = make_label("fin");
+      RESULT = 
+        labcond + "\tEQU\t*\n" +
+        cond + 
+        "\tBEZ\t" + labfin + "\n" + 
+        li1 + 
+        "\tPUSH\t" + labcond + "\n" + 
+        "\tGOTO\n" + 
+        labfin + "\tEQU\t*\n"; 
     :}
 ;
 

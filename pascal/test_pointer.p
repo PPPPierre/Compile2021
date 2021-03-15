@@ -1,6 +1,11 @@
 int a = 1;
+int b = 2;
 int * p;
 p = &a;
 print a;
+print p;
+print *p;
+p = &b;
+print b;
 print p;
 print *p;
