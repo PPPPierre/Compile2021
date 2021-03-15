@@ -35,6 +35,7 @@ action code {:
   }
 
   HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
+  HashMap<String, Integer> cnst_map = new HashMap<String, Integer>();
   Stack<String> if_label_stack = new Stack<String>();
   Stack<String> switch_label_stack = new Stack<String>();
   Stack<String> switch_var_stack = new Stack<String>();
@@ -46,7 +47,7 @@ terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE,
   TK_OCURLY, TK_CCURLY, TK_MOD, TK_UMINUS, TK_WHILE, TK_COMMA, 
   TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, 
   TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, 
-  TK_RETURN, TK_GLOBAL, TK_ELIF, TK_SWITCH, TK_CASE;
+  TK_RETURN, TK_GLOBAL, TK_ELIF, TK_SWITCH, TK_CASE, TK_REF, TK_DEREF;
 terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
 terminal String TK_IDENT;
 
@@ -62,6 +63,7 @@ precedence left TK_PLUS, TK_MINUS;
 precedence left TK_TIMES, TK_DIVIDE, TK_MOD;
 precedence left TK_AND, TK_OR;
 precedence left TK_UMINUS, TK_NOT;
+precedence left TK_REF, TK_DEREF;
 
 start with target;
 
@@ -396,6 +398,11 @@ declaration ::=
   TK_DECL lident:lv
     {: RESULT =  lv; :}
   |
+  TK_DECL TK_TIMES ref_dec:v
+    {:
+      RESULT = make_inst(v, "DS", "1");
+    :}
+  |
   TK_DECL TK_TIMES ref_dec:v TK_OB TK_ICNST:i TK_CB
     {: RESULT = v + "\tDS\t" + i + "\n"; :}
   |
@@ -715,6 +722,19 @@ expr ::=
   TK_MINUS expr:e
     {: RESULT = "\tPUSH\t 0\n" + e + "\tSUB\n"; :} 
   %prec TK_UMINUS
+  |
+  TK_AND ref:v
+    {: RESULT = make_inst("", "PUSH", v); :}
+  %prec TK_REF
+  |
+  TK_TIMES ref:v
+    {: 
+      RESULT =
+        make_inst("", "PUSH", v) +
+        make_inst("", "LOAD", "") +
+        make_inst("", "LOAD", "");
+    :}
+  %prec TK_DEREF
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
