@@ -316,7 +316,7 @@ switch_state ::=
 ;
 
 switch_head ::=
-  TK_SWITCH TK_OP exp:e TK_CP
+  TK_SWITCH TK_OP expr:e TK_CP
     {:
       String lab_switch_fin = make_label("fin_switch_state");
       String var_switch = make_var("switch_var")
