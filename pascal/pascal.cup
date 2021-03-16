@@ -592,7 +592,7 @@ func ::=
 ;
 
 lexpr ::=
-  lexpr:le TK_COMMA expr:e {: RESULT = le + e; :}
+  lexpr:le TK_COMMA expr:e {: RESULT = e + le; :}
   |
   expr:e {: RESULT = e; :}
 ;
