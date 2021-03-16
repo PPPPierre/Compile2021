@@ -283,7 +283,7 @@ declaration ::=
   |
   TK_DECL TK_TIMES ref_dec:v
     {:
-      new_var = make_var("pointer");
+      String new_var = make_var("pointer");
       RESULT = 
         make_inst(v, "DS", "1") +
         make_inst(new_var, "DS", "1") +
