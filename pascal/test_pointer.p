@@ -23,6 +23,6 @@ int * y;
 *y = 3;
 print *x;
 print *y;
-call proc(*x, *y);
+call swap(*x, *y);
 print *x;
 print *y

@@ -548,26 +548,30 @@ input_call ::=
 
 lvar ::=
   lvar:lv TK_COMMA var:v
-    {:
-      RESULT = lv + v ;
-    :}
+    {: RESULT = lv + v ; :}
   |
   var:v
+    {: RESULT = v ; :}
+;
+
+var ::= 
+  ref_dec:v 
     {:
       RESULT = 
         make_inst(v, "DS", "1") +
         make_inst("", "PUSH", v) +
         make_inst("", "SWAP", "") +
-        make_inst("", "STORE", "") ;
+        make_inst("", "STORE", "") ; 
     :}
-;
-
-var ::= 
-  ref_dec:v 
-    {: RESULT = v ; :}
   |
   TK_TIMES ref_dec:v
-    {: RESULT = v ; :}
+    {: 
+      RESULT = 
+        make_inst(v, "DS", "1") +
+        make_inst("", "PUSH", v) +
+        make_inst("", "SWAP", "") +
+        make_inst("", "STORE", "") ; 
+    :}
 ;
 
 ref_dec ::=
