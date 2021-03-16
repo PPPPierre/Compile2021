@@ -283,7 +283,13 @@ declaration ::=
   |
   TK_DECL TK_TIMES ref_dec:v
     {:
-      RESULT = make_inst(v, "DS", "1");
+      new_var = make_var("pointer");
+      RESULT = 
+        make_inst(v, "DS", "1") +
+        make_inst(new_var, "DS", "1") +
+        make_inst("", "PUSH", v) +
+        make_inst("", "PUSH", new_var) +
+        make_inst("", "STORE", "");
     :}
   |
   /*
@@ -311,6 +317,15 @@ assignment ::=
         "\tADD\n" + 
         e2 +
         "\tSTORE\n"; 
+    :}
+  |
+  TK_TIMES ref:p TK_ASSIGN expr:e
+    {:
+      RESULT = 
+        make_inst("", "PUSH", p) +
+        make_inst("", "LOAD", "") +
+        e +
+        make_inst("", "STORE", "");
     :}
   |
   ref:v TK_IN
@@ -539,18 +554,28 @@ lvar ::=
   |
   var:v
     {:
-      RESULT = v ;
-    :}
-;
-
-var ::= 
-  ref_dec:v 
-    {:
       RESULT = 
         make_inst(v, "DS", "1") +
         make_inst("", "PUSH", v) +
         make_inst("", "SWAP", "") +
         make_inst("", "STORE", "") ;
+    :}
+;
+
+var ::= 
+  ref_dec:v 
+    {: RESULT = v ; :}
+  |
+  TK_TIMES ref_dec:v
+    {: RESULT = v ; :}
+;
+
+ref_dec ::=
+  TK_IDENT:v
+    {:
+      String var_name = current_func + ":" + v;
+      var_map.put(var_name, true);
+      RESULT = var_name;
     :}
 ;
 
@@ -593,15 +618,6 @@ ref ::=
       } else {
         RESULT = v;
       }
-    :}
-;
-
-ref_dec ::=
-  TK_IDENT:v
-    {:
-      String var_name = current_func + ":" + v;
-      var_map.put(var_name, true);
-      RESULT = var_name;
     :}
 ;
 
