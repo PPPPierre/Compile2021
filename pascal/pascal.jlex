@@ -6,9 +6,11 @@ import java.util.*;
 %column
 %cup
 %standalone
+%{
+    HashMap<String, Integer> cnst_map = new HashMap<String, Integer>();
+%}
 
 ICNST = [0-9]+
-HashMap<String, Integer> cnst_map = new HashMap<String, Integer>();
 
 %state COMMENT
 
