@@ -31,6 +31,7 @@ ICNST = [0-9]+
     "func"                  { return new Symbol(sym.TK_FUNC); }
     "call"                  { return new Symbol(sym.TK_CALL); }
     "return"                { return new Symbol(sym.TK_RETURN); }
+    "define"                { return new Symbol(sym.TK_DEFINE); }
     "<"                     { return new Symbol(sym.TK_MINR); }
     "<="                    { return new Symbol(sym.TK_EMINR); }
     ">"                     { return new Symbol(sym.TK_GRTR); }
@@ -56,7 +57,13 @@ ICNST = [0-9]+
     "}"                     { return new Symbol(sym.TK_CCURLY); }
     "<< INPUT"              { return new Symbol(sym.TK_IN); }
     {ICNST}		            { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
-    [a-zA-Z][a-zA-Z0-9]*    { return new Symbol(sym.TK_IDENT, new String(yytext())); }
+    [a-zA-Z][a-zA-Z0-9]*    { 
+                                String n = yytext();
+                                if (sym.cstn_map.containsKey(n)){
+                                    return new Symbol(sym.TK_ICNST, new Integer(sym.cstn_map.get(n)));
+                                }
+                                return new Symbol(sym.TK_IDENT, new String(n)); 
+                            }
     [\ \t\n\r\f]            { }
     .		                { System.err.println("unexpected char '" + yytext() +
                                                  "' line " + yyline);
