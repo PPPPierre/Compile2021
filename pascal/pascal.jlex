@@ -1,5 +1,5 @@
 import java_cup.runtime.Symbol;
-import java_cup.runtime.CUP$action;
+import java_cup.runtime.action;
 import java.util.*;
 %%
 %class Lexer
@@ -60,9 +60,9 @@ ICNST = [0-9]+
     "<< INPUT"              { return new Symbol(sym.TK_IN); }
     {ICNST}		            { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
     [a-zA-Z][a-zA-Z0-9]*    { 
-                                String n = yytext();
-                                if (CUP$action.cnst_map.containsKey(n)){
-                                    return new Symbol(sym.TK_ICNST, new Integer(CUP$action.cnst_map.get(n)));
+                                String n = yylex();
+                                if (cup%action.cnst_map.containsKey(n)){
+                                    return new Symbol(sym.TK_ICNST, new Integer(action.cnst_map.get(n)));
                                 }
                                 return new Symbol(sym.TK_IDENT, new String(n)); 
                             }
