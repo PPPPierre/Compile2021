@@ -34,7 +34,7 @@ action code {:
   }
 
   HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
-  HashMap<String, Integer> cnst_map = new HashMap<String, Integer>();
+  public static HashMap<String, Integer> cnst_map = new HashMap<String, Integer>();
   Stack<String> if_label_stack = new Stack<String>();
   Stack<String> switch_label_stack = new Stack<String>();
   Stack<String> switch_var_stack = new Stack<String>();
