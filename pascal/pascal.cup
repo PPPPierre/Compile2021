@@ -1,7 +1,6 @@
 import java_cup.runtime.*;
 import java.util.*;
 import java.io.*;
-import java.util.HashMap;
 
 parser code {:
   public static void main(String args[]) throws Exception {
