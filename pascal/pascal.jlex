@@ -1,6 +1,5 @@
 import java_cup.runtime.Symbol;
 import java.util.*;
-import CUP$Parser$actions;
 %%
 %class Lexer
 %line
