@@ -236,7 +236,7 @@ inst  ::=
   |
   */
   TK_DEFINE TK_IDENT:n TK_ICNST:i TK_SEP
-    {: Lexer.cnst_map.put(n, i); :}
+    {: cnst_map.put(n, i); :}
   |
   TK_EXIT TK_OP expr:e TK_CP
     {: RESULT = e + "\tSTOP\n"; :}
