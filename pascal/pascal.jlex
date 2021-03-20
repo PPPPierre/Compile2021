@@ -59,8 +59,8 @@ ICNST = [0-9]+
     {ICNST}		            { return new Symbol(sym.TK_ICNST, new Integer(yytext())); }
     [a-zA-Z][a-zA-Z0-9]*    { 
                                 String n = yytext();
-                                if (sym.cstn_map.containsKey(n)){
-                                    return new Symbol(sym.TK_ICNST, new Integer(sym.cstn_map.get(n)));
+                                if (cstn_map.containsKey(n)){
+                                    return new Symbol(sym.TK_ICNST, new Integer(cstn_map.get(n)));
                                 }
                                 return new Symbol(sym.TK_IDENT, new String(n)); 
                             }
