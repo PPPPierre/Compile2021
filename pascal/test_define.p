@@ -1,2 +1,2 @@
 define two 2;
-print (two + 1);
+print two + 1;

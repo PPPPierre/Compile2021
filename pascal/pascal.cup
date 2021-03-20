@@ -34,7 +34,6 @@ action code {:
   }
 
   HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
-  // HashMap<String, Integer> cnst_map = new HashMap<String, Integer>();
   Stack<String> if_label_stack = new Stack<String>();
   Stack<String> switch_label_stack = new Stack<String>();
   Stack<String> switch_var_stack = new Stack<String>();
@@ -236,7 +235,10 @@ inst  ::=
   |
   */
   TK_DEFINE TK_IDENT:n TK_ICNST:i TK_SEP
-    {: Global.cnst_map.put(n, i); :}
+    {: 
+      Global.cnst_map.put(n, i);
+      RESULT = ""; 
+    :}
   |
   TK_EXIT TK_OP expr:e TK_CP
     {: RESULT = e + "\tSTOP\n"; :}
