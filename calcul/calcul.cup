@@ -4,15 +4,17 @@ import java_cup.runtime.*;
 import java.util.*;
 import java.io.*;
 
-parser code {:
-  public static void main(String args[]) throws Exception {
-    new Parser(new Lexer(new InputStreamReader(System.in))).parse();
-  }
+action code {:
+  // definition de map
+  Map<String, Double> dictionary_variable = new HashMap<String, Double>();
 :}
 
-// definition de map
-action code {:
-  Map<String, Double> dictionary_variable = new HashMap<String, Double>();
+parser code {:
+  public static void main(String args[]) throws Exception {
+    Lexer l = new Lexer(new InputStreamReader(System.in)); // La classe définie dans le fichier .jlex
+    Parser p = new Parser();
+    p.parse();
+  }
 :}
 
 // definition des token

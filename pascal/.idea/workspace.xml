@@ -13,6 +13,9 @@
   </component>
   <component name="ProjectId" id="1pfgI3A1tMD7inoDhTmIQdEdTIN" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$USER_HOME$/PycharmProjects/Tuibiji" />
+  </component>
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -37,5 +40,16 @@
       <updated>1615579476158</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
