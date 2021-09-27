@@ -12,150 +12,314 @@ action code {:
 parser code {:
   public static void main(String args[]) throws Exception {
     Lexer l = new Lexer(new InputStreamReader(System.in)); // La classe définie dans le fichier .jlex
-    Parser p = new Parser();
+    Parser p = new Parser(l);
     p.parse();
   }
 :}
 
 // definition des token
-terminal TK_ASSIGN, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE, TK_UMINUS, TK_OP, TK_CP, TK_AND, TK_OR, TK_NOT, TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG, TK_POWER;
-terminal Double TK_VAL, TK_PI, TK_BOOL, TK_E, TK_TRUE, TK_FALSE; 
+terminal TK_ASSIGN, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE, TK_DONE, TK_UMINUS, TK_OP, TK_CP, 
+         TK_AND, TK_OR, TK_NOT, TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG, TK_POWER, TK_CP_SML_E, 
+         TK_CP_SML, TK_CP_BIG_E, TK_CP_BIG, TK_CP_EQL, TK_EXIT, TK_LCOMM, TK_COND, TK_COLON, TK_PI_VAR,
+         TK_PLUS_ASS, TK_MINUS_ASS, TK_MULT_ASS, TK_DIV_ASS; 
+terminal Double TK_VAL, TK_PI, TK_E, TK_TRUE, TK_FALSE, TK_NAN, TK_INF, TK_INDEX;
 terminal String TK_IDENT;
 
 // definition des etats intermediaires
-non terminal commandes, commande, assignment;
-non terminal Double expression, exprbool;
+non terminal commandes, commande, assignment, comment;
+non terminal Double expression, exprbool, bool, constant, ident;
 
 // associativite et priorite des operateurs
 // order of the priorite : bottom - highest, top - lowest
+precedence left TK_CP_EQL, TK_CP_BIG_E, TK_CP_SML_E, TK_CP_BIG, TK_CP_SML;
 precedence left TK_PLUS, TK_MINUS; 
 precedence left TK_TIMES, TK_DIVIDE;
 precedence left TK_UMINUS;
+precedence left TK_PLUS_ASS, TK_MINUS_ASS, TK_MULT_ASS, TK_DIV_ASS;
 precedence left TK_AND, TK_OR;
 precedence left TK_NOT;
 precedence left TK_OP, TK_CP;
 precedence left TK_POWER;
 precedence left TK_SIN, TK_COS, TK_TAN, TK_SQRT, TK_LOG;
+precedence left TK_COND, TK_COLON;
 
 // objectif
 start with commandes;
 
 commandes ::=
     commande
-  | commandes commande
+  | 
+    commandes commande
+  | 
+    error TK_DONE
 ;
 
 commande ::=
-      expression:e // expression seule, affichage
-	{: System.out.println("# " + e); :}
-    TK_DONE
-  |
-      exprbool:e // expression seule, affichage
-	{:
-      if (e == 0){
-          System.out.println("# false");
-      }else{
-          System.out.println("# true");
-      } 
+    expression:e // expression seule, affichage
+	{: 
+    if (Double.isNaN(e)){
+      System.out.println("# NaN");
+    }else{
+      System.out.println("# " + e);
+    }
   :}
     TK_DONE
   |
-      assignment // assignement of variables
+    exprbool:e // expression seule, affichage
+	{:
+    if (e == 0){
+      System.out.println("# false");
+    }else{
+      System.out.println("# true");
+    } 
+  :}
+    TK_DONE
+  |
+    assignment // assignement of variables
+    TK_DONE
+  |
+    comment
+  |
+    TK_EXIT
+  {:
+    System.out.println("# Turning off...");
+    System.exit(0);
+  :}
     TK_DONE
 ;
 
+comment ::=
+    TK_LCOMM TK_DONE
+;
+
 expression ::=
-      expression:e1 TK_PLUS expression:e2   // effectue l'addition
+    expression:e1 TK_PLUS expression:e2   // effectue l'addition
 	{: RESULT = e1 + e2 ; :}
   | 
-      expression:e1 TK_MINUS expression:e2  // effectue la soustraction
+    expression:e1 TK_MINUS expression:e2  // effectue la soustraction
 	{: RESULT = e1 - e2 ; :}
   | 
-      expression:e1 TK_TIMES expression:e2  // effectue la multiplication
+    expression:e1 TK_TIMES expression:e2  // effectue la multiplication
 	{: RESULT = e1 * e2 ; :}
   | 
-      expression:e1 TK_DIVIDE expression:e2 // effectue la division
+    expression:e1 TK_DIVIDE expression:e2 // effectue la division
 	{: RESULT = e1 / e2 ; :}
   | 
-      expression:e1 TK_POWER expression:e2  // effectue la division
-	{: RESULT = Math.pow(e1, e2) ; :}
-  | 
-      TK_MINUS expression:e                 // effectue l'inversion
+    expression:e1 TK_POWER expression:e2  // effectue la division
+	{: RESULT = Math.pow(e1, e2); :}
+  |
+    expression:e1 TK_INDEX:e2
+  {:
+    RESULT = e1;
+    System.out.println("# " + e2);
+  :} 
+  |
+    TK_MINUS expression:e                 // effectue l'inversion
 	{: RESULT = 0 - e ; :}
   %prec TK_UMINUS
   | 
-      TK_OP expression:e TK_CP              // effectue les parentheses
+    TK_OP expression:e TK_CP              // effectue les parentheses
 	{: RESULT = e ; :}
   |
-      TK_SIN TK_OP expression:e TK_CP       // effectue la fonction sinus
+    TK_SIN TK_OP expression:e TK_CP       // effectue la fonction sinus
   {: RESULT =  Math.sin(e); :}
   |
-      TK_COS TK_OP expression:e TK_CP       // effectue la fonction cosinus
+    TK_COS TK_OP expression:e TK_CP       // effectue la fonction cosinus
   {: RESULT =  Math.cos(e); :}
   |
-      TK_TAN TK_OP expression:e TK_CP       // effectue la fonction tangent
+    TK_TAN TK_OP expression:e TK_CP       // effectue la fonction tangent
   {: RESULT =  Math.tan(e); :}
   |
-      TK_SQRT TK_OP expression:e TK_CP      // effectue la fonction racine
+    TK_SQRT TK_OP expression:e TK_CP      // effectue la fonction racine
   {: RESULT =  Math.sqrt(e); :}
   |
-      TK_LOG TK_OP expression:e TK_CP       // effectue la fonction log
+    TK_LOG TK_OP expression:e TK_CP       // effectue la fonction log
   {: RESULT =  Math.log(e); :}
   | 
-      TK_VAL:v                              // valeur
-	{: RESULT = v; :}
-  | 
-      TK_PI:v                               // valeur de pi
-	{: RESULT = Math.PI; :}
-  | 
-      TK_E:v                                // valeur de e
-	{: RESULT = Math.E; :}
-  |   
-      TK_IDENT:k
-  {: RESULT = dictionary_variable.get(k); :}
-  |    
-      TK_BOOL:e
-  {: RESULT = e; :}
+    exprbool:b TK_COND expression:e1 TK_COLON expression:e2
+  {: 
+    if (b == 1) {
+      RESULT = e1;
+    } else {
+      RESULT = e2;
+    }
+  :}
+  |
+    constant:v
+  {: RESULT = v; :}
+  |
+    expression:v1 ident:v2
+  {: RESULT = v1 * v2; :}
+  |
+    ident:v
+  {: RESULT = v; :}
 ;
 
-TK_BOOL ::=
-      TK_TRUE:e 
+ident ::=
+    TK_IDENT:k
+  {: 
+    if (dictionary_variable.containsKey(k)){
+      RESULT = dictionary_variable.get(k);
+    } else {
+      RESULT = Double.NaN;
+      System.out.println("# error: variable \"" + k + "\" is not defined!");
+    }
+  :}
+  |
+    TK_PI_VAR
+  {: RESULT = Math.PI; :}
+;
+
+constant ::=
+    TK_VAL:v                              // valeur
+	{: RESULT = v; :}
+  | 
+    TK_PI                               // valeur de pi
+	{: RESULT = Math.PI; :}
+  | 
+    TK_E                                // valeur de e
+	{: RESULT = Math.E; :}
+  |
+    TK_NAN                             
+	{: RESULT = Double.NaN; :}
+  |
+    TK_INF
+  {: RESULT = Double.POSITIVE_INFINITY; :}
+;
+
+bool ::=
+    TK_TRUE:e 
   {: RESULT = e; :}
   |
-      TK_FALSE:e
+    TK_FALSE:e
   {: RESULT = e; :}
 ;
 
 exprbool ::=
-      exprbool:e1 TK_AND exprbool:e2   // effectue l'operation et
+    exprbool:e1 TK_AND exprbool:e2   // effectue l'operation et
   {: 
-      if (e1*e2 == 0){
-        RESULT = 0;
-      }else{
-        RESULT = 1;
-      }
+    if (e1*e2 == 0){
+      RESULT = Double.valueOf(0);
+    }else{
+      RESULT = Double.valueOf(1);
+    }
   :}
   | 
-      exprbool:e1 TK_OR exprbool:e2  // effectue l'operiation ou
+    exprbool:e1 TK_OR exprbool:e2  // effectue l'operiation ou
   {: 
-      if (e1 + e2 == 0){
-        RESULT = 0;
-      }else{
-        RESULT = 1;
-      }
+    if (e1 + e2 == 0){
+      RESULT = Double.valueOf(0);
+    }else{
+      RESULT = Double.valueOf(1);
+    }
   :}
   | 
-      TK_NOT exprbool:e  // effectue l'operation non
+    TK_NOT exprbool:e  // effectue l'operation non
   {:
-      if (e == 0){
-        RESULT = 1;
-      }else{
-        RESULT = 0;
-      }
+    if (e == 0){
+      RESULT = Double.valueOf(0);
+    }else{
+      RESULT = Double.valueOf(1);
+    }
   :}
+  |
+    expression:e1 TK_CP_EQL expression:e2
+  {:
+    if (e1 == e2){
+      RESULT = Double.valueOf(1);
+    } else {
+      RESULT = Double.valueOf(0);
+    }
+  :}
+  |
+    expression:e1 TK_CP_SML_E expression:e2
+  {:
+    if (e1 <= e2){
+      RESULT = Double.valueOf(1);
+    } else {
+      RESULT = Double.valueOf(0);
+    }
+  :}
+  |
+    expression:e1 TK_CP_BIG_E expression:e2
+  {:
+    if (e1 >= e2){
+      RESULT = Double.valueOf(1);
+    } else {
+      RESULT = Double.valueOf(0);
+    }
+  :}
+  |
+    expression:e1 TK_CP_SML expression:e2
+  {:
+    if (e1 < e2){
+      RESULT = Double.valueOf(1);
+    } else {
+      RESULT = Double.valueOf(0);
+    }
+  :}
+  |
+    expression:e1 TK_CP_BIG expression:e2
+  {:
+    if (e1 > e2){
+      RESULT = Double.valueOf(1);
+    } else {
+      RESULT = Double.valueOf(0);
+    }
+  :}
+  |
+    bool:e
+  {: RESULT = e; :}
 ;
 
 assignment ::=
-      TK_IDENT:v1 TK_ASSIGN expression:e1
-  {: dictionary_variable.put(v1, e1); :} 
+    TK_IDENT:k TK_ASSIGN expression:e
+  {: 
+    dictionary_variable.put(k, e);
+    System.out.println("# " + k + " = " + e);
+  :} 
+  |
+    TK_IDENT:k TK_PLUS_ASS expression:e
+  {: 
+    if (dictionary_variable.containsKey(k)){
+      double temp = dictionary_variable.get(k) + e;
+      dictionary_variable.put(k, temp);
+      System.out.println("# " + k + " = " + temp);
+    } else {
+      System.out.println("# error: variable \"" + k + "\" is not defined!");
+    }
+  :} 
+  |
+    TK_IDENT:k TK_MINUS_ASS expression:e
+  {: 
+    if (dictionary_variable.containsKey(k)){
+      double temp = dictionary_variable.get(k) - e;
+      dictionary_variable.put(k, temp);
+      System.out.println("# " + k + " = " + temp);
+    } else {
+      System.out.println("# error: variable \"" + k + "\" is not defined!");
+    }
+  :}
+  |
+    TK_IDENT:k TK_MULT_ASS expression:e
+  {: 
+    if (dictionary_variable.containsKey(k)){
+      double temp = dictionary_variable.get(k) * e;
+      dictionary_variable.put(k, temp);
+      System.out.println("# " + k + " = " + temp);
+    } else {
+      System.out.println("# error: variable \"" + k + "\" is not defined!");
+    }
+  :}
+  |
+    TK_IDENT:k TK_DIV_ASS expression:e
+  {: 
+    if (dictionary_variable.containsKey(k)){
+      double temp = dictionary_variable.get(k) / e;
+      dictionary_variable.put(k, temp);
+      System.out.println("# " + k + " = " + temp);
+    } else {
+      System.out.println("# error: variable \"" + k + "\" is not defined!");
+    }
+  :} 
 ;

@@ -73,7 +73,6 @@ ICNST = [0-9]+
 
 <COMMENT> 
 {
-
     "*/"                   { yybegin(YYINITIAL); }
     .|\n                   { }
 }

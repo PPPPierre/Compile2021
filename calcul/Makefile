@@ -2,9 +2,9 @@
 
 JAVAC	= javac -Xlint:unchecked
 JAVA	= java
-#JFLAGS	= -cp /usr/share/java/java-cup-0.11b.jar:.
+JFLAGS	= -cp /usr/share/java/java-cup-0.11b.jar:.
 # pour Xenial
-JFLAGS	= -cp /usr/share/java/java-cup-0.11a.jar:.
+# JFLAGS	= -cp /usr/share/java/java-cup-0.11a.jar:.
 
 LEX	= jflex
 YACC	= cup

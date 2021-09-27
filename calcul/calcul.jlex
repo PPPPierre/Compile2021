@@ -1,11 +1,13 @@
 // $Id: calcul.jlex 505 2017-09-25 12:44:47Z coelho $
 import java_cup.runtime.Symbol;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 %%
 %class Lexer
 %line
 %column
 %cup
+/*
 %{
   /** fonction de test du lexer. */
   static public void main(String[] args) throws Exception {
@@ -16,32 +18,74 @@ import java.io.*;
     }
   }
 %}
-%%
-([1-9][0-9]*|0)	{ return new Symbol(sym.TK_VAL, new Double(yytext())); }
-"+"	                   { return new Symbol(sym.TK_PLUS); }
-"-"                    { return new Symbol(sym.TK_MINUS); }
-"*"                    { return new Symbol(sym.TK_TIMES); }
-"/"                    { return new Symbol(sym.TK_DIVIDE); }
-"&"                    { return new Symbol(sym.TK_AND); }
-"|"                    { return new Symbol(sym.TK_OR); }
-"~"                    { return new Symbol(sym.TK_NOT); }
-"("                    { return new Symbol(sym.TK_OP); }
-")"                    { return new Symbol(sym.TK_CP); }
-"="                    { return new Symbol(sym.TK_ASSIGN); }
-"sin"                  { return new Symbol(sym.TK_SIN); }
-"cos"                  { return new Symbol(sym.TK_COS); }
-"tan"                  { return new Symbol(sym.TK_TAN); }
-"sqrt"                 { return new Symbol(sym.TK_SQRT); }
-"log"                  { return new Symbol(sym.TK_LOG); }
-"^"                    { return new Symbol(sym.TK_POWER); }
-"pi"                   { return new Symbol(sym.TK_PI); }
-“e”                    { return new Symbol(sym.TK_E); }
-"true"                 { return new Symbol(sym.TK_TRUE, new Double(1)); }
-"false"                { return new Symbol(sym.TK_FALSE, new Double(0)); }
-([a-zA-Z][a-zA-Z0-9]*) { return new Symbol(sym.TK_IDENT, new String(yytext())); }
+*/
+%standalone
 
-(\n|\r|\r\n)	{ return new Symbol(sym.TK_DONE); }
-[\ \t\f] { /* ignore espaces et assimiles. */ }
-.	{ System.err.println("unexpected char '" + yytext() +
-			     "' line " + yyline);
-	  return new Symbol(sym.error); }
+INDEX = ([¹²³⁴⁵⁶⁷⁸⁹][⁰¹²³⁴⁵⁶⁷⁸⁹]*|⁰)
+
+%state COMMENT
+%%
+<YYINITIAL>
+{
+  ([1-9][0-9]*|0)	       { return new Symbol(sym.TK_VAL, new Double(yytext())); }
+  \/\/[^\n]*             { return new Symbol(sym.TK_LCOMM); }
+
+  {INDEX}                { 
+                           byte[] bytes = yytext().getBytes(StandardCharsets.UTF_8);
+                           for (byte b : bytes) {
+                           System.out.print(String.format("%s ", b));
+                           }
+                           System.out.print("\n");
+                           String utf8String = new String(bytes, StandardCharsets.UTF_8);
+                           System.out.println(utf8String);
+                           return new Symbol(sym.TK_INDEX, new String(yytext())); 
+                         }
+  "/*"                   { yybegin(COMMENT); }
+  "+"	                   { return new Symbol(sym.TK_PLUS); }
+  "-"                    { return new Symbol(sym.TK_MINUS); }
+  "*"                    { return new Symbol(sym.TK_TIMES); }
+  "/"                    { return new Symbol(sym.TK_DIVIDE); }
+  "&"                    { return new Symbol(sym.TK_AND); }
+  "|"                    { return new Symbol(sym.TK_OR); }
+  "~"                    { return new Symbol(sym.TK_NOT); }
+  "("                    { return new Symbol(sym.TK_OP); }
+  "?"                    { return new Symbol(sym.TK_COND); }
+  ":"                    { return new Symbol(sym.TK_COLON); }
+  ")"                    { return new Symbol(sym.TK_CP); }
+  "="                    { return new Symbol(sym.TK_ASSIGN); }
+  "+="                   { return new Symbol(sym.TK_PLUS_ASS); }
+  "-="                   { return new Symbol(sym.TK_MINUS_ASS); }
+  "*="                   { return new Symbol(sym.TK_MULT_ASS); }
+  "/="                   { return new Symbol(sym.TK_DIV_ASS); }
+  "nan"                  { return new Symbol(sym.TK_NAN); }
+  "infinity"             { return new Symbol(sym.TK_INF); }
+  "sin"                  { return new Symbol(sym.TK_SIN); }
+  "cos"                  { return new Symbol(sym.TK_COS); }
+  "tan"                  { return new Symbol(sym.TK_TAN); }
+  "sqrt"                 { return new Symbol(sym.TK_SQRT); }
+  "log"                  { return new Symbol(sym.TK_LOG); }
+  "^"                    { return new Symbol(sym.TK_POWER); }
+  "π"                    { return new Symbol(sym.TK_PI_VAR); }
+  "pi"                   { return new Symbol(sym.TK_PI); }
+  “e”                    { return new Symbol(sym.TK_E); }
+  "true"                 { return new Symbol(sym.TK_TRUE, new Double(1)); }
+  "false"                { return new Symbol(sym.TK_FALSE, new Double(0)); }
+  "=="                   { return new Symbol(sym.TK_CP_EQL); }
+  "<="                   { return new Symbol(sym.TK_CP_SML_E); }
+  ">="                   { return new Symbol(sym.TK_CP_BIG_E); }
+  "<"                    { return new Symbol(sym.TK_CP_SML); }
+  ">"                    { return new Symbol(sym.TK_CP_BIG); }
+  "exit"                 { return new Symbol(sym.TK_EXIT); }
+  ([a-zA-Z][a-zA-Z0-9]*) { return new Symbol(sym.TK_IDENT, new String(yytext())); }
+
+  (\n|\r|\r\n)	         { return new Symbol(sym.TK_DONE); }
+  [\ \t\f]               { /* ignore espaces et assimiles. */ }
+  .	                     { System.err.println("unexpected char '" + yytext() +"' line " + yyline);
+                           return new Symbol(sym.error); }
+}
+
+<COMMENT>
+{
+  "*/"(\n)?              { yybegin(YYINITIAL); }
+  .|\n                   { }       
+}
