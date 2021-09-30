@@ -1,20 +1,21 @@
+;/ Function: PGCD, number of variables: 2
 	PUSH	@lab_fin_8
 	GOTO	
 PGCD	EQU	*
-PGCD:i	DS	1
-	PUSH	PGCD:i
+main:PGCD:i	DS	1
+	PUSH	main:PGCD:i
 	SWAP	
 	STORE	
-PGCD:j	DS	1
-	PUSH	PGCD:j
+main:PGCD:j	DS	1
+	PUSH	main:PGCD:j
 	SWAP	
 	STORE	
-PGCD:a	DS	1
-PGCD:b	DS	1
-PGCD:c	DS	1
-	PUSH	PGCD:i
+main:PGCD:a	DS	1
+main:PGCD:b	DS	1
+main:PGCD:c	DS	1
+	PUSH	main:PGCD:i
 	LOAD
-	PUSH	PGCD:j
+	PUSH	main:PGCD:j
 	LOAD
 	SUB
 	BGZ	@lab_grtr_0
@@ -25,44 +26,44 @@ PGCD:c	DS	1
 	PUSH	1
 @lab_grtr_1	EQU	*
 	BEZ	@lab_fin_con_3
-	PUSH	PGCD:a
-	PUSH	PGCD:i
+	PUSH	main:PGCD:a
+	PUSH	main:PGCD:i
 	LOAD
 	STORE
-	PUSH	PGCD:b
-	PUSH	PGCD:j
+	PUSH	main:PGCD:b
+	PUSH	main:PGCD:j
 	LOAD
 	STORE
 	PUSH	@lab_fin_if_state_2
 	GOTO	
 @lab_fin_con_3	EQU	*
-	PUSH	PGCD:a
-	PUSH	PGCD:j
+	PUSH	main:PGCD:a
+	PUSH	main:PGCD:j
 	LOAD
 	STORE
-	PUSH	PGCD:b
-	PUSH	PGCD:i
+	PUSH	main:PGCD:b
+	PUSH	main:PGCD:i
 	LOAD
 	STORE
 	PUSH	@lab_fin_if_state_2
 	GOTO	
 @lab_fin_if_state_2	EQU	*
-	PUSH	PGCD:c
-	PUSH	PGCD:a
+	PUSH	main:PGCD:c
+	PUSH	main:PGCD:a
 	LOAD
-	PUSH	PGCD:b
+	PUSH	main:PGCD:b
 	LOAD
 	DIV
-	PUSH	PGCD:b
+	PUSH	main:PGCD:b
 	LOAD
 	MUL
-	PUSH	PGCD:a
+	PUSH	main:PGCD:a
 	LOAD
 	SWAP
 	SUB
 	STORE
 @lab_fin_6	EQU	*
-	PUSH	PGCD:c
+	PUSH	main:PGCD:c
 	LOAD
 	PUSH	0
 	SUB
@@ -74,24 +75,24 @@ PGCD:c	DS	1
 	PUSH	0
 @lab_diff_5	EQU	*
 	BEZ	@lab_fin_7
-	PUSH	PGCD:a
-	PUSH	PGCD:b
+	PUSH	main:PGCD:a
+	PUSH	main:PGCD:b
 	LOAD
 	STORE
-	PUSH	PGCD:b
-	PUSH	PGCD:c
+	PUSH	main:PGCD:b
+	PUSH	main:PGCD:c
 	LOAD
 	STORE
-	PUSH	PGCD:c
-	PUSH	PGCD:a
+	PUSH	main:PGCD:c
+	PUSH	main:PGCD:a
 	LOAD
-	PUSH	PGCD:b
+	PUSH	main:PGCD:b
 	LOAD
 	DIV
-	PUSH	PGCD:b
+	PUSH	main:PGCD:b
 	LOAD
 	MUL
-	PUSH	PGCD:a
+	PUSH	main:PGCD:a
 	LOAD
 	SWAP
 	SUB
@@ -99,24 +100,25 @@ PGCD:c	DS	1
 	PUSH	@lab_fin_6
 	GOTO
 @lab_fin_7	EQU	*
-	PUSH	PGCD:b
+	PUSH	main:PGCD:b
 	LOAD
 	SWAP	
 	GOTO	
 @lab_fin_8	EQU	*
+;/ Function: fac, number of variables: 1
 	PUSH	@lab_fin_14
 	GOTO	
 fac	EQU	*
-fac:i	DS	1
-	PUSH	fac:i
+main:fac:i	DS	1
+	PUSH	main:fac:i
 	SWAP	
 	STORE	
-	PUSH	fac:i
+	PUSH	main:fac:i
 	LOAD
 	PUSH	1
 	SUB
 	BGZ	@lab_egrtr_9
-	PUSH	fac:i
+	PUSH	main:fac:i
 	LOAD
 	PUSH	1
 	SUB
@@ -128,10 +130,11 @@ fac:i	DS	1
 	PUSH	1
 @lab_egrtr_10	EQU	*
 	BEZ	@lab_fin_con_13
-	PUSH	fac:i
+	PUSH	main:fac:i
 	LOAD
+;/ Call function: fac, number of variables: 1
 	PUSH	@lab_back_fac_11
-	PUSH	fac:i
+	PUSH	main:fac:i
 	LOAD
 	PUSH	1
 	SUB
@@ -151,25 +154,26 @@ fac:i	DS	1
 	GOTO	
 @lab_fin_if_state_12	EQU	*
 @lab_fin_14	EQU	*
+;/ Function: cribleErato, number of variables: 0
 	PUSH	@lab_fin_39
 	GOTO	
 cribleErato	EQU	*
-cribleErato:map	DS	100
-cribleErato:i	DS	1
-	PUSH	cribleErato:i
+main:cribleErato:map	DS	100
+main:cribleErato:i	DS	1
+	PUSH	main:cribleErato:i
 	PUSH	0
 	STORE	
-cribleErato:j	DS	1
-	PUSH	cribleErato:j
+main:cribleErato:j	DS	1
+	PUSH	main:cribleErato:j
 	PUSH	0
 	STORE	
 @lab_fin_17	EQU	*
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	100
 	SUB
 	BGZ	@lab_minr_15
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	100
 	SUB
@@ -181,14 +185,14 @@ cribleErato:j	DS	1
 	PUSH	0
 @lab_minr_16	EQU	*
 	BEZ	@lab_fin_18
-	PUSH	cribleErato:map
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:map
+	PUSH	main:cribleErato:i
 	LOAD
 	ADD
 	PUSH	1
 	STORE
-	PUSH	cribleErato:i
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	1
 	ADD
@@ -196,21 +200,21 @@ cribleErato:j	DS	1
 	PUSH	@lab_fin_17
 	GOTO
 @lab_fin_18	EQU	*
-	PUSH	cribleErato:map
+	PUSH	main:cribleErato:map
 	PUSH	0
 	ADD
 	PUSH	0
 	STORE
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	PUSH	0
 	STORE
 @lab_fin_29	EQU	*
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	10
 	SUB
 	BGZ	@lab_minr_19
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	10
 	SUB
@@ -222,12 +226,12 @@ cribleErato:j	DS	1
 	PUSH	0
 @lab_minr_20	EQU	*
 	BEZ	@lab_fin_30
-	PUSH	cribleErato:j
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:j
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	1
 	ADD
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	1
 	ADD
@@ -235,11 +239,11 @@ cribleErato:j	DS	1
 	PUSH	1
 	SUB
 	STORE
-	PUSH	cribleErato:map
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:map
+	PUSH	main:cribleErato:i
 	LOAD
-	ADD
-	LOAD
+	ADD	
+	LOAD	
 	PUSH	1
 	SUB
 	BEZ	@lab_equal_21
@@ -251,12 +255,12 @@ cribleErato:j	DS	1
 @lab_equal_22	EQU	*
 	BEZ	@lab_fin_con_28
 @lab_fin_25	EQU	*
-	PUSH	cribleErato:j
+	PUSH	main:cribleErato:j
 	LOAD
 	PUSH	100
 	SUB
 	BGZ	@lab_minr_23
-	PUSH	cribleErato:j
+	PUSH	main:cribleErato:j
 	LOAD
 	PUSH	100
 	SUB
@@ -268,16 +272,16 @@ cribleErato:j	DS	1
 	PUSH	0
 @lab_minr_24	EQU	*
 	BEZ	@lab_fin_26
-	PUSH	cribleErato:map
-	PUSH	cribleErato:j
+	PUSH	main:cribleErato:map
+	PUSH	main:cribleErato:j
 	LOAD
 	ADD
 	PUSH	0
 	STORE
-	PUSH	cribleErato:j
-	PUSH	cribleErato:j
+	PUSH	main:cribleErato:j
+	PUSH	main:cribleErato:j
 	LOAD
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	ADD
 	PUSH	1
@@ -290,8 +294,8 @@ cribleErato:j	DS	1
 	GOTO	
 @lab_fin_con_28	EQU	*
 @lab_fin_if_state_27	EQU	*
-	PUSH	cribleErato:i
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	1
 	ADD
@@ -299,16 +303,16 @@ cribleErato:j	DS	1
 	PUSH	@lab_fin_29
 	GOTO
 @lab_fin_30	EQU	*
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	PUSH	0
 	STORE
 @lab_fin_37	EQU	*
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	100
 	SUB
 	BGZ	@lab_minr_31
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	100
 	SUB
@@ -320,11 +324,11 @@ cribleErato:j	DS	1
 	PUSH	0
 @lab_minr_32	EQU	*
 	BEZ	@lab_fin_38
-	PUSH	cribleErato:map
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:map
+	PUSH	main:cribleErato:i
 	LOAD
-	ADD
-	LOAD
+	ADD	
+	LOAD	
 	PUSH	1
 	SUB
 	BEZ	@lab_equal_33
@@ -336,7 +340,7 @@ cribleErato:j	DS	1
 @lab_equal_34	EQU	*
 	BEZ	@lab_fin_con_36
 ;/ print...
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	1
 	ADD
@@ -345,8 +349,8 @@ cribleErato:j	DS	1
 	GOTO	
 @lab_fin_con_36	EQU	*
 @lab_fin_if_state_35	EQU	*
-	PUSH	cribleErato:i
-	PUSH	cribleErato:i
+	PUSH	main:cribleErato:i
+	PUSH	main:cribleErato:i
 	LOAD
 	PUSH	1
 	ADD
@@ -356,19 +360,20 @@ cribleErato:j	DS	1
 @lab_fin_38	EQU	*
 	GOTO	
 @lab_fin_39	EQU	*
+;/ Function: ifElifElseTest, number of variables: 1
 	PUSH	@lab_fin_47
 	GOTO	
 ifElifElseTest	EQU	*
-ifElifElseTest:i	DS	1
-	PUSH	ifElifElseTest:i
+main:ifElifElseTest:i	DS	1
+	PUSH	main:ifElifElseTest:i
 	SWAP	
 	STORE	
-	PUSH	ifElifElseTest:i
+	PUSH	main:ifElifElseTest:i
 	LOAD
 	PUSH	0
 	SUB
 	BGZ	@lab_minr_40
-	PUSH	ifElifElseTest:i
+	PUSH	main:ifElifElseTest:i
 	LOAD
 	PUSH	0
 	SUB
@@ -386,7 +391,7 @@ ifElifElseTest:i	DS	1
 	PUSH	@lab_fin_if_state_42
 	GOTO	
 @lab_fin_con_43	EQU	*
-	PUSH	ifElifElseTest:i
+	PUSH	main:ifElifElseTest:i
 	LOAD
 	PUSH	5
 	SUB
@@ -411,16 +416,17 @@ ifElifElseTest:i	DS	1
 	GOTO	
 @lab_fin_if_state_42	EQU	*
 @lab_fin_47	EQU	*
+;/ Function: switchTest, number of variables: 1
 	PUSH	@lab_fin_56
 	GOTO	
 switchTest	EQU	*
-switchTest:i	DS	1
-	PUSH	switchTest:i
+main:switchTest:i	DS	1
+	PUSH	main:switchTest:i
 	SWAP	
 	STORE	
 @var_switch_var_49	DS	1
 	PUSH	@var_switch_var_49
-	PUSH	switchTest:i
+	PUSH	main:switchTest:i
 	LOAD
 	STORE	
 	PUSH	@var_switch_var_49
@@ -477,25 +483,26 @@ switchTest:i	DS	1
 	GOTO	
 @lab_fin_56	EQU	*
 ;/ print...
+;/ Call function: PGCD, number of variables: 3
 	PUSH	@lab_back_PGCD_57
-	PUSH	120
 	PUSH	192
+	PUSH	120
 	PUSH	PGCD
 	GOTO	
 @lab_back_PGCD_57	EQU	*
 	OUT
 ;/ print...
+;/ Call function: fac, number of variables: 4
 	PUSH	@lab_back_fac_58
 	PUSH	6
 	PUSH	fac
 	GOTO	
 @lab_back_fac_58	EQU	*
 	OUT
-	PUSH	@lab_back_cribleErato_59
-	PUSH	cribleErato
-	GOTO	
-@lab_back_cribleErato_59	EQU	*
+;/ Call function: cribleErato, number of variables: 4
+	STOP	
 ;/ print...
+;/ Call function: ifElifElseTest, number of variables: 5
 	PUSH	@lab_back_ifElifElseTest_60
 	PUSH	 0
 	PUSH	2
@@ -505,6 +512,7 @@ switchTest:i	DS	1
 @lab_back_ifElifElseTest_60	EQU	*
 	OUT
 ;/ print...
+;/ Call function: ifElifElseTest, number of variables: 6
 	PUSH	@lab_back_ifElifElseTest_61
 	PUSH	3
 	PUSH	ifElifElseTest
@@ -512,6 +520,7 @@ switchTest:i	DS	1
 @lab_back_ifElifElseTest_61	EQU	*
 	OUT
 ;/ print...
+;/ Call function: ifElifElseTest, number of variables: 7
 	PUSH	@lab_back_ifElifElseTest_62
 	PUSH	20
 	PUSH	ifElifElseTest
@@ -519,6 +528,7 @@ switchTest:i	DS	1
 @lab_back_ifElifElseTest_62	EQU	*
 	OUT
 ;/ print...
+;/ Call function: switchTest, number of variables: 8
 	PUSH	@lab_back_switchTest_63
 	PUSH	1
 	PUSH	switchTest
@@ -526,6 +536,7 @@ switchTest:i	DS	1
 @lab_back_switchTest_63	EQU	*
 	OUT
 ;/ print...
+;/ Call function: switchTest, number of variables: 9
 	PUSH	@lab_back_switchTest_64
 	PUSH	2
 	PUSH	switchTest
@@ -533,6 +544,7 @@ switchTest:i	DS	1
 @lab_back_switchTest_64	EQU	*
 	OUT
 ;/ print...
+;/ Call function: switchTest, number of variables: 10
 	PUSH	@lab_back_switchTest_65
 	PUSH	3
 	PUSH	switchTest
@@ -540,11 +552,14 @@ switchTest:i	DS	1
 @lab_back_switchTest_65	EQU	*
 	OUT
 ;/ print...
+;/ Call function: switchTest, number of variables: 11
 	PUSH	@lab_back_switchTest_66
 	PUSH	5
 	PUSH	switchTest
 	GOTO	
 @lab_back_switchTest_66	EQU	*
 	OUT
+	PUSH	0
+	STOP
 	STOP
 

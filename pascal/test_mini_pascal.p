@@ -105,3 +105,5 @@ print switchTest(1);
 print switchTest(2);
 print switchTest(3);
 print switchTest(5);
+
+exit(0)

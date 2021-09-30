@@ -11,7 +11,10 @@ parser code {:
 action code {:
   // attributes & methods seen from actions
   int count = 0;
-  String current_func = "main";
+  int def_var_num_count = 0;
+  int call_var_num_count = 0;
+  String current_scope = "main";
+  String last_scope = current_scope;
 
   String make_inst(String lab, String op, String arg) {
     return lab + "\t" + op + "\t" + arg + "\n";
@@ -34,6 +37,7 @@ action code {:
   }
 
   HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
+  HashMap<String, Integer> func_var_num = new HashMap<String, Integer>();
   Stack<String> if_label_stack = new Stack<String>();
   Stack<String> switch_label_stack = new Stack<String>();
   Stack<String> switch_var_stack = new Stack<String>();
@@ -47,7 +51,7 @@ terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE,
   TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, 
   TK_RETURN, TK_GLOBAL, TK_ELIF, TK_SWITCH, TK_CASE, TK_REF, TK_DEREF,
   TK_DEFINE;
-terminal Integer TK_ICNST, TK_TRUE, TK_FALSE;
+terminal Integer TK_ICNST;
 terminal String TK_IDENT;
 
 non terminal target;
@@ -120,7 +124,7 @@ inst  ::=
   |
   TK_DEFINE TK_IDENT:n TK_ICNST:i TK_SEP
     {: 
-      Global.cnst_map.put(n, i);
+      Lexer.cnst_map.put(n, i);
       RESULT = ""; 
     :}
   |
@@ -374,7 +378,11 @@ proc_def ::=
   TK_PROC func:f input_dec:id TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
+      func_var_num.put(f, def_var_num_count);
+      String comment = make_comm("Function: " + f + ", number of variables: " + def_var_num_count);
+      def_var_num_count = 0;
       RESULT =
+        comment + 
         make_inst("", "PUSH", labfin) + 
         make_inst("", "GOTO", "") + 
         make_inst(f, "EQU", "*") + 
@@ -382,7 +390,7 @@ proc_def ::=
         li +
         make_inst("", "GOTO", "") + 
         make_inst(labfin, "EQU", "*");
-      current_func = "main";
+      current_scope = last_scope;
     :}
 ;
 
@@ -390,12 +398,22 @@ proc_call ::=
   TK_CALL TK_IDENT:f input_call:ic
     {:
       String lab_back = make_label("back_" + f);
-      RESULT = 
-        make_inst("", "PUSH", lab_back) +
-        ic +
-        make_inst("", "PUSH", f) +
-        make_inst("", "GOTO", "") +
-        make_inst(lab_back, "EQU", "*");
+      //String prob_name = current_scope + ":" + f;
+      String comment = make_comm("Call function: " + f + ", number of variables: " + call_var_num_count);
+      if (call_var_num_count == func_var_num.get(f)){
+        RESULT = 
+          comment + 
+          make_inst("", "PUSH", lab_back) +
+          ic + 
+          make_inst("", "PUSH", f) +
+          make_inst("", "GOTO", "") +
+          make_inst(lab_back, "EQU", "*");
+        call_var_num_count = 0;
+      } else {
+        RESULT = 
+          comment + 
+          make_inst("", "STOP", "");
+      }      
     :}
 ;
 
@@ -403,14 +421,19 @@ func_def ::=
   TK_FUNC func:f input_dec:id TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
+      func_var_num.put(f, def_var_num_count);
+      String comment = make_comm("Function: " + f + ", number of variables: " + def_var_num_count);
+      def_var_num_count = 0;
       RESULT =
+        comment + 
         make_inst("", "PUSH", labfin) + 
         make_inst("", "GOTO", "") + 
         make_inst(f, "EQU", "*") + 
-        id +
-        li +
+        id + 
+        li + 
+        //make_inst("", "GOTO", "") + // 这里不用加 GOTO 是因为在 return 里面已经加了 GOTO 了，所以函数其实在 li 这里已经回到了原来的调用的位置
         make_inst(labfin, "EQU", "*");
-      current_func = "main";
+     current_scope = last_scope;
     :}
 ;
 
@@ -432,10 +455,16 @@ input_call ::=
 
 lvar ::=
   lvar:lv TK_COMMA var:v
-    {: RESULT = lv + v ; :}
+    {: 
+      def_var_num_count += 1;
+      RESULT = lv + v ; 
+    :}
   |
   var:v
-    {: RESULT = v ; :}
+    {: 
+      def_var_num_count += 1;
+      RESULT = v ; 
+    :}
 ;
 
 var ::= 
@@ -461,7 +490,7 @@ var ::=
 ref_dec ::=
   TK_IDENT:v
     {:
-      String var_name = current_func + ":" + v;
+      String var_name = current_scope + ":" + v;
       var_map.put(var_name, true);
       RESULT = var_name;
     :}
@@ -470,15 +499,25 @@ ref_dec ::=
 func ::=
   TK_IDENT:f
     {:
-      current_func = f;
+      last_scope = current_scope;
+      current_scope = current_scope + ":" + f;
+      //RESULT = current_scope;
       RESULT = f;
     :}
 ;
 
 lexpr ::=
-  lexpr:le TK_COMMA expr:e {: RESULT = e + le; :}
+  lexpr:le TK_COMMA expr:e 
+    {:
+      call_var_num_count += 1; 
+      RESULT = e + le; 
+    :}
   |
-  expr:e {: RESULT = e; :}
+  expr:e 
+    {: 
+      call_var_num_count += 1;
+      RESULT = e; 
+    :}
 ;
 
 lident ::=
@@ -500,7 +539,7 @@ lident ::=
 ref ::=
   TK_IDENT:v
     {:
-      String var_name = current_func + ":" + v;
+      String var_name = current_scope + ":" + v;
       if (var_map.containsKey(var_name)){
         RESULT = var_name;
       } else {
@@ -513,28 +552,26 @@ expr ::=
   TK_ICNST:i 
     {: RESULT = "\tPUSH\t" + i + "\n"; :}
   |
-  TK_TRUE:i
-    {: RESULT = "\tPUSH\t" + i + "\n"; :}
-  |
-  TK_FALSE:i
-    {: RESULT = "\tPUSH\t" + i + "\n"; :}
-  |
   ref:v
     {: 
       RESULT = 
-        "\tPUSH\t" + v + "\n" + "\tLOAD\n"; :}
+        "\tPUSH\t" + v + "\n" + 
+        "\tLOAD\n"; 
+    :}
   |
   ref:v TK_OB expr:e TK_CB
     {: 
-      RESULT = "\tPUSH\t" + v + "\n" + 
-      e +
-      "\tADD\n" + 
-      "\tLOAD\n"; 
+      RESULT = 
+        make_inst("", "PUSH", v) +
+        e +
+        make_inst("", "ADD", "") +
+        make_inst("", "LOAD", "");
     :}
   |
   TK_IDENT:f TK_OP TK_CP
     {: 
       String lab_back = make_label("back_" + f);
+      //String func_name = current_scope + ":" + f;
       RESULT = 
         make_inst("", "PUSH", lab_back) +
         make_inst("", "PUSH", f) +
@@ -545,7 +582,10 @@ expr ::=
   TK_IDENT:f TK_OP lexpr:le TK_CP
     {: 
       String lab_back = make_label("back_" + f);
+      String comment = make_comm("Call function: " + f + ", number of variables: " + call_var_num_count);
+      //String func_name = current_scope + ":" + f;
       RESULT = 
+        comment + 
         make_inst("", "PUSH", lab_back) +
         le +
         make_inst("", "PUSH", f) +
@@ -553,21 +593,6 @@ expr ::=
         make_inst(lab_back, "EQU", "*");
     :}
   |
-  /*
-  TK_TIMES ref:v TK_OB expr:e TK_CB
-    {: 
-      RESULT = "\tPUSH\t" + v + "\n" + 
-      e +
-      "\tADD\n" + 
-      "\tLOAD\n" +
-      "\tLOAD\n";
-    :}
-  |
-  TK_TIMES TK_IDENT:v
-    {:
-      RESULT = "\tPUSH\t" + v + "\n"; :}
-  |
-  */
   expr:e1 TK_PLUS expr:e2 
     {: RESULT = e1 + e2 + "\tADD\n"; :}
   |
