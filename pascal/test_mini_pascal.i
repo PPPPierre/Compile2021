@@ -1,4 +1,4 @@
-;/ Function: PGCD, number of variables: 2
+;/ Function: PGCD, number of variables: 0
 	PUSH	@lab_fin_8
 	GOTO	
 PGCD	EQU	*
@@ -105,7 +105,7 @@ main:PGCD:c	DS	1
 	SWAP	
 	GOTO	
 @lab_fin_8	EQU	*
-;/ Function: fac, number of variables: 1
+;/ Function: fac, number of variables: 0
 	PUSH	@lab_fin_14
 	GOTO	
 fac	EQU	*
@@ -360,7 +360,7 @@ main:cribleErato:j	DS	1
 @lab_fin_38	EQU	*
 	GOTO	
 @lab_fin_39	EQU	*
-;/ Function: ifElifElseTest, number of variables: 1
+;/ Function: ifElifElseTest, number of variables: 0
 	PUSH	@lab_fin_47
 	GOTO	
 ifElifElseTest	EQU	*
@@ -416,7 +416,7 @@ main:ifElifElseTest:i	DS	1
 	GOTO	
 @lab_fin_if_state_42	EQU	*
 @lab_fin_47	EQU	*
-;/ Function: switchTest, number of variables: 1
+;/ Function: switchTest, number of variables: 0
 	PUSH	@lab_fin_56
 	GOTO	
 switchTest	EQU	*
@@ -483,7 +483,7 @@ main:switchTest:i	DS	1
 	GOTO	
 @lab_fin_56	EQU	*
 ;/ print...
-;/ Call function: PGCD, number of variables: 3
+;/ Call function: PGCD, number of variables: 2
 	PUSH	@lab_back_PGCD_57
 	PUSH	192
 	PUSH	120
@@ -492,17 +492,20 @@ main:switchTest:i	DS	1
 @lab_back_PGCD_57	EQU	*
 	OUT
 ;/ print...
-;/ Call function: fac, number of variables: 4
+;/ Call function: fac, number of variables: 1
 	PUSH	@lab_back_fac_58
 	PUSH	6
 	PUSH	fac
 	GOTO	
 @lab_back_fac_58	EQU	*
 	OUT
-;/ Call function: cribleErato, number of variables: 4
-	STOP	
+;/ Call function: cribleErato, number of variables: 0
+	PUSH	@lab_back_cribleErato_59
+	PUSH	cribleErato
+	GOTO	
+@lab_back_cribleErato_59	EQU	*
 ;/ print...
-;/ Call function: ifElifElseTest, number of variables: 5
+;/ Call function: ifElifElseTest, number of variables: 1
 	PUSH	@lab_back_ifElifElseTest_60
 	PUSH	 0
 	PUSH	2
@@ -512,7 +515,7 @@ main:switchTest:i	DS	1
 @lab_back_ifElifElseTest_60	EQU	*
 	OUT
 ;/ print...
-;/ Call function: ifElifElseTest, number of variables: 6
+;/ Call function: ifElifElseTest, number of variables: 1
 	PUSH	@lab_back_ifElifElseTest_61
 	PUSH	3
 	PUSH	ifElifElseTest
@@ -520,7 +523,7 @@ main:switchTest:i	DS	1
 @lab_back_ifElifElseTest_61	EQU	*
 	OUT
 ;/ print...
-;/ Call function: ifElifElseTest, number of variables: 7
+;/ Call function: ifElifElseTest, number of variables: 1
 	PUSH	@lab_back_ifElifElseTest_62
 	PUSH	20
 	PUSH	ifElifElseTest
@@ -528,7 +531,7 @@ main:switchTest:i	DS	1
 @lab_back_ifElifElseTest_62	EQU	*
 	OUT
 ;/ print...
-;/ Call function: switchTest, number of variables: 8
+;/ Call function: switchTest, number of variables: 1
 	PUSH	@lab_back_switchTest_63
 	PUSH	1
 	PUSH	switchTest
@@ -536,7 +539,7 @@ main:switchTest:i	DS	1
 @lab_back_switchTest_63	EQU	*
 	OUT
 ;/ print...
-;/ Call function: switchTest, number of variables: 9
+;/ Call function: switchTest, number of variables: 1
 	PUSH	@lab_back_switchTest_64
 	PUSH	2
 	PUSH	switchTest
@@ -544,7 +547,7 @@ main:switchTest:i	DS	1
 @lab_back_switchTest_64	EQU	*
 	OUT
 ;/ print...
-;/ Call function: switchTest, number of variables: 10
+;/ Call function: switchTest, number of variables: 1
 	PUSH	@lab_back_switchTest_65
 	PUSH	3
 	PUSH	switchTest
@@ -552,7 +555,7 @@ main:switchTest:i	DS	1
 @lab_back_switchTest_65	EQU	*
 	OUT
 ;/ print...
-;/ Call function: switchTest, number of variables: 11
+;/ Call function: switchTest, number of variables: 1
 	PUSH	@lab_back_switchTest_66
 	PUSH	5
 	PUSH	switchTest

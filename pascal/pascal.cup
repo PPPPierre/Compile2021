@@ -37,7 +37,7 @@ action code {:
   }
 
   HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
-  HashMap<String, Integer> func_var_num = new HashMap<String, Integer>();
+  HashMap<String, Integer> func_var_num_map = new HashMap<String, Integer>();
   Stack<String> if_label_stack = new Stack<String>();
   Stack<String> switch_label_stack = new Stack<String>();
   Stack<String> switch_var_stack = new Stack<String>();
@@ -378,7 +378,7 @@ proc_def ::=
   TK_PROC func:f input_dec:id TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
-      func_var_num.put(f, def_var_num_count);
+      func_var_num_map.put(f, def_var_num_count);
       String comment = make_comm("Function: " + f + ", number of variables: " + def_var_num_count);
       def_var_num_count = 0;
       RESULT =
@@ -400,7 +400,7 @@ proc_call ::=
       String lab_back = make_label("back_" + f);
       //String prob_name = current_scope + ":" + f;
       String comment = make_comm("Call function: " + f + ", number of variables: " + call_var_num_count);
-      if (call_var_num_count == func_var_num.get(f)){
+      if (call_var_num_count == func_var_num_map.get(f)){
         RESULT = 
           comment + 
           make_inst("", "PUSH", lab_back) +
@@ -418,12 +418,15 @@ proc_call ::=
 ;
 
 func_def ::=
-  TK_FUNC func:f input_dec:id TK_OCURLY linst:li TK_CCURLY
+  TK_FUNC func:f input_dec:id 
+    {: 
+      func_var_num_map.put(f, def_var_num_count);
+      def_var_num_count = 0;
+    :} 
+  TK_OCURLY linst:li TK_CCURLY
     {: 
       String labfin = make_label("fin");
-      func_var_num.put(f, def_var_num_count);
       String comment = make_comm("Function: " + f + ", number of variables: " + def_var_num_count);
-      def_var_num_count = 0;
       RESULT =
         comment + 
         make_inst("", "PUSH", labfin) + 
@@ -583,14 +586,30 @@ expr ::=
     {: 
       String lab_back = make_label("back_" + f);
       String comment = make_comm("Call function: " + f + ", number of variables: " + call_var_num_count);
+      if (call_var_num_count == func_var_num_map.get(f)){
+        RESULT = 
+          comment + 
+          make_inst("", "PUSH", lab_back) +
+          le +
+          make_inst("", "PUSH", f) +
+          make_inst("", "GOTO", "") +
+          make_inst(lab_back, "EQU", "*");
+          call_var_num_count = 0;
+      }else{
+        RESULT = 
+          comment + 
+          make_inst("","STOP","");
+      }
+
       //String func_name = current_scope + ":" + f;
-      RESULT = 
-        comment + 
-        make_inst("", "PUSH", lab_back) +
-        le +
-        make_inst("", "PUSH", f) +
-        make_inst("", "GOTO", "") +
-        make_inst(lab_back, "EQU", "*");
+        RESULT = 
+          comment + 
+          make_inst("", "PUSH", lab_back) +
+          le +
+          make_inst("", "PUSH", f) +
+          make_inst("", "GOTO", "") +
+          make_inst(lab_back, "EQU", "*");
+          call_var_num_count = 0;
     :}
   |
   expr:e1 TK_PLUS expr:e2 
