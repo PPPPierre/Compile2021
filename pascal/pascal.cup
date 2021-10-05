@@ -276,10 +276,15 @@ declaration ::=
       var_map.put(v, 1);
       first_free += i + 1;
       if (list_expr_count == i) {
-
         String part_assign = "";
-
-
+        for (int k=0; k<i; k++){
+          part_assign += 
+            make_inst("","PUSH",array_name) +
+            make_inst("","PUSH",String.valueOf(k)) +
+            make_inst("","ADD","") +
+            make_inst("","SWAP","") +
+            make_inst("","STORE","");
+        }
         RESULT = 
           make_inst(v, "DS", "1") +
           array_name + "\tDS\t" + i + "\n" +

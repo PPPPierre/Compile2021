@@ -15,10 +15,21 @@ call swap(a);
 print a[0];
 print a[1];
 
+int b[4] = [1,2,3,4];
+int i=0;
+while (i<4){
+    print b[i];
+    i = i + 1;
+}
+
 /*
 Output should be:
 1
 2
 2
 1
+1
+2
+3
+4
 */
