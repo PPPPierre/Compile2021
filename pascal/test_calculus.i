@@ -1,6 +1,6 @@
 @pt_ff	DS	1
 	PUSH	@pt_ff
-	PUSH	9
+	PUSH	1
 	STORE	
 	PUSH	@lab_ff_end
 	GOTO	
@@ -21,31 +21,30 @@
 	STORE	
 	GOTO	
 @lab_dma_end	EQU	*
-main:a	DS	1
 ;/ print...
-	PUSH	main:a
-	OUT
-;/ print...
-	PUSH	main:a
-	LOAD
-	OUT
-	PUSH	main:a
 	PUSH	1
-	STORE	
-main:b	DS	1
-@var_array_0	DS	5
-	PUSH	main:b
-	PUSH	@var_array_0
-	STORE	
-main:c	DS	1
-;/ print...
-	PUSH	main:a
+	PUSH	2
+	ADD
 	OUT
 ;/ print...
-	PUSH	main:b
+	PUSH	4
+	PUSH	2
+	DIV
 	OUT
 ;/ print...
-	PUSH	main:c
+	PUSH	8
+	PUSH	3
+	DIV
+	PUSH	3
+	MUL
+	PUSH	8
+	SWAP
+	SUB
+	OUT
+;/ print...
+	PUSH	 0
+	PUSH	2
+	SUB
 	OUT
 	STOP
 

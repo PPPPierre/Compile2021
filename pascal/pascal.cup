@@ -11,8 +11,9 @@ parser code {:
 action code {:
   // attributes & methods seen from actions
   int count = 0;
+  int first_free = 1;
   int def_var_num_count = 0;
-  int call_var_num_count = 0;
+  int list_expr_count = 0;
   String current_scope = "main";
   String last_scope = current_scope;
 
@@ -36,13 +37,23 @@ action code {:
     return "@var_" + n + "_" + count++;
   }
 
-  String do_ff_add(int n){
+  String do_ff_add(){
     String check_point = make_label("ff");
     return make_inst("","PUSH", check_point) +
-          make_inst("", "PUSH", String.valueOf(n)) +
+          make_inst("", "SWAP", "") +
           make_inst("", "PUSH", "@lab_ff_add") +
           make_inst("", "GOTO", "") +
           make_inst(check_point, "EQU", "*");
+  }
+
+  String do_dma(){
+    String check_point = make_label("dma");
+    return make_inst("","PUSH", check_point) +
+          make_inst("", "SWAP", "") +
+          make_inst("", "PUSH", "@lab_dma") +
+          make_inst("", "GOTO", "") +
+          make_inst(check_point, "EQU", "*");
+
   }
 
   String do_dma(int n){
@@ -50,7 +61,7 @@ action code {:
           make_inst("", "", "");
   }
 
-  HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
+  HashMap<String, Integer> var_map = new HashMap<String, Integer>();
   HashMap<String, Integer> func_var_num_map = new HashMap<String, Integer>();
   Stack<String> if_label_stack = new Stack<String>();
   Stack<String> switch_label_stack = new Stack<String>();
@@ -74,7 +85,7 @@ non terminal String program, linst, inst, print, expr, comment,
   ref_dec, if_elif_else_state, if_elif_state, if_state, 
   else_state, elif_state, switch_state, switch_head, list_case_state,
   case_state, while_state, proc_def, proc_call, func_def, input_dec, 
-  lvar, var, input_call, dec_dynamic;
+  lvar, var, input_call, dec_dynamic, list;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -90,43 +101,35 @@ target ::=
     {: 
       String inst_first_free = make_inst("@pt_ff","DS","1") +           // Variable for the first free
                               make_inst("","PUSH","@pt_ff") + 
-                              make_inst("","PUSH","1") + 
+                              make_inst("", "PUSH", String.valueOf(first_free)) +
                               make_inst("","STORE","") +
 
-                              make_inst("@var_dma_count","DS","1") +    // Variable for couting dynamique memory allocation
-                              make_inst("","PUSH","@var_dma_count") + 
-                              make_inst("","PUSH","0") + 
-                              make_inst("","STORE","") +
-
-                              make_inst("","PUSH","@lab_ff_end") +
-                              make_inst("","GOTO","") +
-
-                              make_inst("@lab_ff_add","EQU","*") +      // Function for advancing the first free pt
-                              make_inst("","PUSH","@pt_ff") +
-                              make_inst("", "LOAD", "") +
-                              make_inst("", "ADD", "") +
-                              make_inst("","PUSH","@pt_ff") +
-                              make_inst("", "SWAP", "") +
-                              make_inst("", "STORE","") +
-                              make_inst("", "GOTO","") +
+                              make_inst("","PUSH","@lab_ff_end") +      // Function for advancing the first free pt
+                              make_inst("","GOTO","") +                 //
+                              make_inst("@lab_ff_add","EQU","*") +      // Label
+                              make_inst("","PUSH","@pt_ff") +           //
+                              make_inst("", "LOAD", "") +               //
+                              make_inst("", "ADD", "") +                //
+                              make_inst("","PUSH","@pt_ff") +           //
+                              make_inst("", "SWAP", "") +               //
+                              make_inst("", "STORE","") +               //
+                              make_inst("", "GOTO","") +                //
                               make_inst("@lab_ff_end", "EQU", "*") +    // End function
 
-                              make_inst("","PUSH","@lab_dma_end") +
-                              make_inst("","GOTO","") +
-
-                              make_inst("@lab_dma","EQU","*") +         // Function for Dynamic Memory Allocation
-
-                              make_inst("", "PUSH", "@var_dma_count") +
-                              make_inst("", "SWAP", "") +
-                              make_inst("", "STORE", "") +
-
+                              make_inst("","PUSH","@lab_dma_end") +     // Function for Dynamic Memory Allocation
+                              make_inst("","GOTO","") +                 //
+                              make_inst("@lab_dma","EQU","*") +         // Label
+                              make_inst("","PUSH","@pt_ff") +           //
+                              make_inst("","LOAD","") +                 //
+                              make_inst("","STORE","") +                //
+                              make_inst("", "GOTO","") +                //
                               make_inst("@lab_dma_end", "EQU", "*");    // End function
       
       String test = make_inst("","PUSH","@pt_ff") +
                     make_inst("","LOAD","") +
                     make_inst("","OUT","");                     
       
-      System.out.println(inst_first_free + s + test + "\tSTOP\n");  
+      System.out.println(inst_first_free + s + "\tSTOP\n");  
     :}
 ;
 
@@ -213,16 +216,18 @@ print ::=
 declaration ::=
   TK_GLOBAL TK_IDENT:v 
     {:
+      first_free += 1;
+      var_map.put(v, 0);
       RESULT = 
-        make_inst(v, "DS", "1") +
-        do_ff_add(1);
+        make_inst(v, "DS", "1");
     :}
   |
   TK_DECL ref_dec:v TK_ASSIGN expr:e
     {: 
+      first_free += 1;
+      var_map.put(v, 0);
       RESULT =
         make_inst(v,"DS","1") +
-        do_ff_add(1) + 
         make_inst("", "PUSH", v) +
         e + 
         make_inst("", "STORE", "");
@@ -230,9 +235,10 @@ declaration ::=
   |
   TK_DECL ref_dec:v
     {:
+      first_free += 1;
+      var_map.put(v, 0);
       RESULT = 
-        make_inst(v, "DS", "1") +
-        do_ff_add(1);
+        make_inst(v, "DS", "1");
     :}
   |
   TK_DECL lident:lv
@@ -240,10 +246,11 @@ declaration ::=
   |
   TK_DECL TK_TIMES ref_dec:v
     {:
-      String new_var = make_var("pointer");
+      first_free += 2;
+      String new_var = make_var("var");
+      var_map.put(v, 1);
       RESULT = 
         make_inst(v, "DS", "1") +
-        do_ff_add(1) +
         make_inst(new_var, "DS", "1") +
         make_inst("", "PUSH", v) +
         make_inst("", "PUSH", new_var) +
@@ -253,23 +260,53 @@ declaration ::=
   TK_DECL ref_dec:v TK_OB TK_ICNST:i TK_CB
     {: 
       String array_name = make_var("array");
+      var_map.put(v, 1);
+      first_free += i + 1;
       RESULT = 
         make_inst(v, "DS", "1") +
         array_name + "\tDS\t" + i + "\n" +
         make_inst("", "PUSH", v) +
         make_inst("", "PUSH", array_name) +
-        make_inst("", "STORE", "") +
-        do_ff_add(i);
+        make_inst("", "STORE", "");
+    :}
+  |
+  TK_DECL ref_dec:v TK_OB TK_ICNST:i TK_CB TK_ASSIGN TK_OB lexpr:le TK_CB
+    {:
+      String array_name = make_var("array");
+      var_map.put(v, 1);
+      first_free += i + 1;
+      if (list_expr_count == i) {
+
+        String part_assign = "";
+
+
+        RESULT = 
+          make_inst(v, "DS", "1") +
+          array_name + "\tDS\t" + i + "\n" +
+          make_inst("", "PUSH", v) +
+          make_inst("", "PUSH", array_name) +
+          make_inst("", "STORE", "") + 
+          le + 
+          part_assign;
+      } else {
+        String comment = make_comm("Number of element not match.");
+        RESULT = comment + "\tSTOP\n";
+      }
+      
     :}
 ;
 
 dec_dynamic ::=
-  TK_DECL TK_TIMES ref:v TK_EQUAL TK_MALLOC TK_OP expr:e TK_CP
+  TK_DECL TK_TIMES ref_dec:p TK_ASSIGN TK_MALLOC TK_OP expr:e TK_CP
     {:
+      first_free ++;
+      var_map.put(p, 1);
       RESULT = 
-        make_inst(v, "DS", "1");
-
-
+        make_inst(p, "DS", "1") +
+        make_inst("", "PUSH", p) +
+        do_dma() +
+        e + 
+        do_ff_add(); 
     :}
 ;
 
@@ -447,7 +484,7 @@ case_state ::=
 while_state ::=
   TK_WHILE TK_OP expr:cond TK_CP TK_OCURLY linst:li1 TK_CCURLY
     {: 
-      String labcond = make_label("fin");
+      String labcond = make_label("cond");
       String labfin = make_label("fin");
       RESULT = 
         labcond + "\tEQU\t*\n" +
@@ -485,8 +522,8 @@ proc_call ::=
     {:
       String lab_back = make_label("back_" + f);
       //String prob_name = current_scope + ":" + f;
-      String comment = make_comm("Call function: " + f + ", number of variables: " + call_var_num_count);
-      if (call_var_num_count == func_var_num_map.get(f)){
+      String comment = make_comm("Call function: " + f + ", number of variables: " + list_expr_count);
+      if (list_expr_count == func_var_num_map.get(f)){
         RESULT = 
           comment + 
           make_inst("", "PUSH", lab_back) +
@@ -494,13 +531,21 @@ proc_call ::=
           make_inst("", "PUSH", f) +
           make_inst("", "GOTO", "") +
           make_inst(lab_back, "EQU", "*");
-        call_var_num_count = 0;
+        list_expr_count = 0;
       } else {
         RESULT = 
           comment + 
           make_inst("", "STOP", "");
       }      
     :}
+;
+
+input_call ::=
+  TK_OP lexpr:le TK_CP
+    {: RESULT = le ; :}
+  |
+  TK_OP TK_CP
+    {: RESULT = "" ; :}
 ;
 
 func_def ::=
@@ -534,14 +579,6 @@ input_dec ::=
     {: RESULT = "" ; :}
 ;
 
-input_call ::=
-  TK_OP lexpr:le TK_CP
-    {: RESULT = le ; :}
-  |
-  TK_OP TK_CP
-    {: RESULT = "" ; :}
-;
-
 lvar ::=
   lvar:lv TK_COMMA var:v
     {: 
@@ -559,6 +596,8 @@ lvar ::=
 var ::= 
   ref_dec:v 
     {:
+      first_free += 1;
+      var_map.put(v, 0);
       RESULT = 
         make_inst(v, "DS", "1") +
         make_inst("", "PUSH", v) +
@@ -568,6 +607,8 @@ var ::=
   |
   TK_TIMES ref_dec:v
     {: 
+      first_free += 1;
+      var_map.put(v, 1);
       RESULT = 
         make_inst(v, "DS", "1") +
         make_inst("", "PUSH", v) +
@@ -580,7 +621,6 @@ ref_dec ::=
   TK_IDENT:v
     {:
       String var_name = current_scope + ":" + v;
-      var_map.put(var_name, true);
       RESULT = var_name;
     :}
 ;
@@ -598,13 +638,13 @@ func ::=
 lexpr ::=
   lexpr:le TK_COMMA expr:e 
     {:
-      call_var_num_count += 1; 
+      list_expr_count += 1; 
       RESULT = e + le; 
     :}
   |
   expr:e 
     {: 
-      call_var_num_count += 1;
+      list_expr_count += 1;
       RESULT = e; 
     :}
 ;
@@ -612,31 +652,21 @@ lexpr ::=
 lident ::=
   lident:lv TK_COMMA ref_dec:v
     {: 
+      first_free += 1;
+      var_map.put(v, 0);
       RESULT = 
         lv + 
-        make_inst(v, "DS", "1") + 
-        do_ff_add(1); 
+        make_inst(v, "DS", "1");
     :}
   |
   ref_dec:v1 TK_COMMA ref_dec:v2
     {:
+      first_free += 2;
+      var_map.put(v1, 0);
+      var_map.put(v2, 0);
       RESULT = 
-        make_inst(v1, "DS", "1") +
-        do_ff_add(1) +
-        make_inst(v2, "DS", "1") +
-        do_ff_add(1); 
-    :}
-;
-
-ref ::=
-  TK_IDENT:v
-    {:
-      String var_name = current_scope + ":" + v;
-      if (var_map.containsKey(var_name)){
-        RESULT = var_name;
-      } else {
-        RESULT = v;
-      }
+        make_inst(v1, "DS", "1");
+        make_inst(v2, "DS", "1");
     :}
 ;
 
@@ -661,22 +691,11 @@ expr ::=
         make_inst("", "LOAD", "");
     :}
   |
-  TK_IDENT:f TK_OP TK_CP
+  TK_IDENT:f input_call:le
     {: 
       String lab_back = make_label("back_" + f);
-      //String func_name = current_scope + ":" + f;
-      RESULT = 
-        make_inst("", "PUSH", lab_back) +
-        make_inst("", "PUSH", f) +
-        make_inst("", "GOTO", "") +
-        make_inst(lab_back, "EQU", "*");
-    :}
-  |
-  TK_IDENT:f TK_OP lexpr:le TK_CP
-    {: 
-      String lab_back = make_label("back_" + f);
-      String comment = make_comm("Call function: " + f + ", number of variables: " + call_var_num_count);
-      if (call_var_num_count == func_var_num_map.get(f)){
+      String comment = make_comm("Call function: " + f + ", number of variables: " + list_expr_count);
+      if (list_expr_count == func_var_num_map.get(f)){
         RESULT = 
           comment + 
           make_inst("", "PUSH", lab_back) +
@@ -684,7 +703,7 @@ expr ::=
           make_inst("", "PUSH", f) +
           make_inst("", "GOTO", "") +
           make_inst(lab_back, "EQU", "*");
-          call_var_num_count = 0;
+          list_expr_count = 0;
       }else{
         RESULT = 
           comment + 
@@ -699,7 +718,7 @@ expr ::=
           make_inst("", "PUSH", f) +
           make_inst("", "GOTO", "") +
           make_inst(lab_back, "EQU", "*");
-          call_var_num_count = 0;
+          list_expr_count = 0;
     :}
   |
   expr:e1 TK_PLUS expr:e2 
@@ -869,4 +888,16 @@ expr ::=
   |
   TK_OP expr:e TK_CP 
     {: RESULT = e; :}
+;
+
+ref ::=
+  TK_IDENT:v
+    {:
+      String var_name = current_scope + ":" + v;
+      if (var_map.containsKey(var_name)){
+        RESULT = var_name;
+      } else {
+        RESULT = v;
+      }
+    :}
 ;

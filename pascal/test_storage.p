@@ -1,9 +1,6 @@
 int a;
 print &a;
-int a;
-print &a;
-int a;
-print &a;
+print a;
 a = 1;
 int b[5];
 int c;

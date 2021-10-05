@@ -5,13 +5,20 @@ proc swap(*a){
     a[1] = temp;
 }
 
-int a[10];
+int a[2];
 a[0] = 1;
 a[1] = 2;
 print a[0];
 print a[1];
-//print a[2];
 
 call swap(a);
 print a[0];
 print a[1];
+
+/*
+Output should be:
+1
+2
+2
+1
+*/

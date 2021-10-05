@@ -1,10 +1,6 @@
 @pt_ff	DS	1
 	PUSH	@pt_ff
-	PUSH	1
-	STORE	
-@var_dma_count	DS	1
-	PUSH	@var_dma_count
-	PUSH	0
+	PUSH	6
 	STORE	
 	PUSH	@lab_ff_end
 	GOTO	
@@ -20,12 +16,13 @@
 	PUSH	@lab_dma_end
 	GOTO	
 @lab_dma	EQU	*
-	PUSH	@var_dma_count
-	SWAP	
+	PUSH	@pt_ff
+	LOAD	
 	STORE	
+	GOTO	
 @lab_dma_end	EQU	*
 ;/ Function: swap, number of variables: 1
-	PUSH	@lab_fin_1
+	PUSH	@lab_fin_0
 	GOTO	
 swap	EQU	*
 main:swap:a	DS	1
@@ -33,11 +30,6 @@ main:swap:a	DS	1
 	SWAP	
 	STORE	
 main:swap:temp	DS	1
-	PUSH	@lab_ff_0
-	PUSH	1
-	PUSH	@lab_ff_add
-	GOTO	
-@lab_ff_0	EQU	*
 	PUSH	main:swap:temp
 	PUSH	main:swap:a
 	LOAD	
@@ -63,17 +55,12 @@ main:swap:temp	DS	1
 	LOAD
 	STORE
 	GOTO	
-@lab_fin_1	EQU	*
+@lab_fin_0	EQU	*
 main:a	DS	1
-@var_array_2	DS	10
+@var_array_1	DS	2
 	PUSH	main:a
-	PUSH	@var_array_2
+	PUSH	@var_array_1
 	STORE	
-	PUSH	@lab_ff_3
-	PUSH	10
-	PUSH	@lab_ff_add
-	GOTO	
-@lab_ff_3	EQU	*
 	PUSH	main:a
 	LOAD	
 	PUSH	0
@@ -101,12 +88,12 @@ main:a	DS	1
 	LOAD	
 	OUT
 ;/ Call function: swap, number of variables: 1
-	PUSH	@lab_back_swap_4
+	PUSH	@lab_back_swap_2
 	PUSH	main:a
 	LOAD
 	PUSH	swap
 	GOTO	
-@lab_back_swap_4	EQU	*
+@lab_back_swap_2	EQU	*
 ;/ print...
 	PUSH	main:a
 	LOAD	
@@ -121,8 +108,5 @@ main:a	DS	1
 	ADD	
 	LOAD	
 	OUT
-	PUSH	@pt_ff
-	LOAD	
-	OUT	
 	STOP
 
