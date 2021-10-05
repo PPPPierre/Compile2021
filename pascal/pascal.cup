@@ -36,6 +36,20 @@ action code {:
     return "@var_" + n + "_" + count++;
   }
 
+  String do_ff_add(int n){
+    String check_point = make_label("ff");
+    return make_inst("","PUSH", check_point) +
+          make_inst("", "PUSH", String.valueOf(n)) +
+          make_inst("", "PUSH", "@lab_ff_add") +
+          make_inst("", "GOTO", "") +
+          make_inst(check_point, "EQU", "*");
+  }
+
+  String do_dma(int n){
+    return make_inst("", "PUSH", String.valueOf(n)) +
+          make_inst("", "", "");
+  }
+
   HashMap<String, Boolean> var_map = new HashMap<String, Boolean>();
   HashMap<String, Integer> func_var_num_map = new HashMap<String, Integer>();
   Stack<String> if_label_stack = new Stack<String>();
@@ -50,7 +64,7 @@ terminal TK_SEP, TK_PRINT, TK_PLUS, TK_MINUS, TK_TIMES, TK_DIVIDE,
   TK_OB, TK_CB, TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, 
   TK_DIFF, TK_AND, TK_OR, TK_NOT, TK_EXIT, TK_PROC, TK_CALL, TK_FUNC, 
   TK_RETURN, TK_GLOBAL, TK_ELIF, TK_SWITCH, TK_CASE, TK_REF, TK_DEREF,
-  TK_DEFINE;
+  TK_DEFINE, TK_MALLOC;
 terminal Integer TK_ICNST;
 terminal String TK_IDENT;
 
@@ -60,7 +74,7 @@ non terminal String program, linst, inst, print, expr, comment,
   ref_dec, if_elif_else_state, if_elif_state, if_state, 
   else_state, elif_state, switch_state, switch_head, list_case_state,
   case_state, while_state, proc_def, proc_call, func_def, input_dec, 
-  lvar, var, input_call;
+  lvar, var, input_call, dec_dynamic;
 
 precedence left TK_MINR, TK_EMINR, TK_GRTR, TK_EGRTR, TK_EQUAL, TK_DIFF;
 precedence left TK_PLUS, TK_MINUS;
@@ -71,11 +85,53 @@ precedence left TK_REF, TK_DEREF;
 
 start with target;
 
-target ::= program:s {: System.out.println(s); :}
+target ::= 
+  program:s 
+    {: 
+      String inst_first_free = make_inst("@pt_ff","DS","1") +           // Variable for the first free
+                              make_inst("","PUSH","@pt_ff") + 
+                              make_inst("","PUSH","1") + 
+                              make_inst("","STORE","") +
+
+                              make_inst("@var_dma_count","DS","1") +    // Variable for couting dynamique memory allocation
+                              make_inst("","PUSH","@var_dma_count") + 
+                              make_inst("","PUSH","0") + 
+                              make_inst("","STORE","") +
+
+                              make_inst("","PUSH","@lab_ff_end") +
+                              make_inst("","GOTO","") +
+
+                              make_inst("@lab_ff_add","EQU","*") +      // Function for advancing the first free pt
+                              make_inst("","PUSH","@pt_ff") +
+                              make_inst("", "LOAD", "") +
+                              make_inst("", "ADD", "") +
+                              make_inst("","PUSH","@pt_ff") +
+                              make_inst("", "SWAP", "") +
+                              make_inst("", "STORE","") +
+                              make_inst("", "GOTO","") +
+                              make_inst("@lab_ff_end", "EQU", "*") +    // End function
+
+                              make_inst("","PUSH","@lab_dma_end") +
+                              make_inst("","GOTO","") +
+
+                              make_inst("@lab_dma","EQU","*") +         // Function for Dynamic Memory Allocation
+
+                              make_inst("", "PUSH", "@var_dma_count") +
+                              make_inst("", "SWAP", "") +
+                              make_inst("", "STORE", "") +
+
+                              make_inst("@lab_dma_end", "EQU", "*");    // End function
+      
+      String test = make_inst("","PUSH","@pt_ff") +
+                    make_inst("","LOAD","") +
+                    make_inst("","OUT","");                     
+      
+      System.out.println(inst_first_free + s + test + "\tSTOP\n");  
+    :}
 ;
 
 program ::= 
-  linst:l {: RESULT = l + "\tSTOP\n"; :}
+  linst:l {: RESULT = l; :}
 ;
 
 linst ::= 
@@ -94,6 +150,9 @@ inst  ::=
     {: RESULT = i; :}
   |
   assignment:i TK_SEP 
+    {: RESULT = i; :}
+  |
+  dec_dynamic:i TK_SEP
     {: RESULT = i; :}
   |
   comment:i 
@@ -154,13 +213,16 @@ print ::=
 declaration ::=
   TK_GLOBAL TK_IDENT:v 
     {:
-      RESULT = make_inst(v, "DS", "1"); 
+      RESULT = 
+        make_inst(v, "DS", "1") +
+        do_ff_add(1);
     :}
   |
   TK_DECL ref_dec:v TK_ASSIGN expr:e
     {: 
       RESULT =
         make_inst(v,"DS","1") +
+        do_ff_add(1) + 
         make_inst("", "PUSH", v) +
         e + 
         make_inst("", "STORE", "");
@@ -168,7 +230,9 @@ declaration ::=
   |
   TK_DECL ref_dec:v
     {:
-      RESULT = make_inst(v, "DS", "1");
+      RESULT = 
+        make_inst(v, "DS", "1") +
+        do_ff_add(1);
     :}
   |
   TK_DECL lident:lv
@@ -179,6 +243,7 @@ declaration ::=
       String new_var = make_var("pointer");
       RESULT = 
         make_inst(v, "DS", "1") +
+        do_ff_add(1) +
         make_inst(new_var, "DS", "1") +
         make_inst("", "PUSH", v) +
         make_inst("", "PUSH", new_var) +
@@ -187,7 +252,24 @@ declaration ::=
   |
   TK_DECL ref_dec:v TK_OB TK_ICNST:i TK_CB
     {: 
-      RESULT = v + "\tDS\t" + i + "\n";
+      String array_name = make_var("array");
+      RESULT = 
+        make_inst(v, "DS", "1") +
+        array_name + "\tDS\t" + i + "\n" +
+        make_inst("", "PUSH", v) +
+        make_inst("", "PUSH", array_name) +
+        make_inst("", "STORE", "") +
+        do_ff_add(i);
+    :}
+;
+
+dec_dynamic ::=
+  TK_DECL TK_TIMES ref:v TK_EQUAL TK_MALLOC TK_OP expr:e TK_CP
+    {:
+      RESULT = 
+        make_inst(v, "DS", "1");
+
+
     :}
 ;
 
@@ -195,12 +277,16 @@ assignment ::=
   ref:v TK_ASSIGN expr:e
     {: 
       RESULT = 
-        "\tPUSH\t" + v + "\n" + e + "\tSTORE\n"; :}
+        make_inst("","PUSH",v) +
+        e +
+        make_inst("","STORE","");
+   :}
   |
   ref:v TK_OB expr:e1 TK_CB TK_ASSIGN expr:e2
     {: 
       RESULT = 
         "\tPUSH\t" + v + "\n" + 
+        make_inst("", "LOAD", "") +
         e1 +
         "\tADD\n" + 
         e2 +
@@ -528,14 +614,17 @@ lident ::=
     {: 
       RESULT = 
         lv + 
-        make_inst(v, "DS", "1"); 
+        make_inst(v, "DS", "1") + 
+        do_ff_add(1); 
     :}
   |
   ref_dec:v1 TK_COMMA ref_dec:v2
     {:
       RESULT = 
         make_inst(v1, "DS", "1") +
-        make_inst(v2, "DS", "1"); 
+        do_ff_add(1) +
+        make_inst(v2, "DS", "1") +
+        do_ff_add(1); 
     :}
 ;
 
@@ -566,6 +655,7 @@ expr ::=
     {: 
       RESULT = 
         make_inst("", "PUSH", v) +
+        make_inst("", "LOAD", "") +
         e +
         make_inst("", "ADD", "") +
         make_inst("", "LOAD", "");

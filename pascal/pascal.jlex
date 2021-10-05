@@ -35,6 +35,7 @@ IDENT = [a-zA-Z][a-zA-Z0-9]*
     "func"                  { return new Symbol(sym.TK_FUNC); }
     "call"                  { return new Symbol(sym.TK_CALL); }
     "return"                { return new Symbol(sym.TK_RETURN); }
+    "malloc"                { return new Symbol(sym.TK_MALLOC); }
     "#define"               { return new Symbol(sym.TK_DEFINE); }
     "<"                     { return new Symbol(sym.TK_MINR); }
     "<="                    { return new Symbol(sym.TK_EMINR); }
@@ -42,7 +43,7 @@ IDENT = [a-zA-Z][a-zA-Z0-9]*
     ">="                    { return new Symbol(sym.TK_EGRTR); }
     "=="                    { return new Symbol(sym.TK_EQUAL); }
     "!="                    { return new Symbol(sym.TK_DIFF); }
-    ";"		                { return new Symbol(sym.TK_SEP); }
+    ";"		                  { return new Symbol(sym.TK_SEP); }
     ","                     { return new Symbol(sym.TK_COMMA); }
     "+"                     { return new Symbol(sym.TK_PLUS); }
     "-"                     { return new Symbol(sym.TK_MINUS); }
@@ -77,6 +78,6 @@ IDENT = [a-zA-Z][a-zA-Z0-9]*
 <COMMENT> 
 {
     "*/"                   { yybegin(YYINITIAL); }
-    .|\n                   { }
+    [^]                    { }
 }
 
